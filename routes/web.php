@@ -71,6 +71,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('admin/cash-register', [AdminController::class, 'cashRegister'])->name('admin.cash-register');
     Route::get('admin/invoice{id}', [AdminController::class, 'invoiceShow'])->name('admin.show.invoice');
     Route::get('admin/invoices/dates', [AdminController::class, 'invoicesDates'])->name('admin.invoices.dates');
+    Route::get('admin/expenses/dates', [AdminController::class, 'expensesDates'])->name('admin.expenses.dates');
 
     //EXPENSE CONTROLS
     Route::resource('expense', ExpenseController::class);

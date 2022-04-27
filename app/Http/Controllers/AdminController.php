@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Invoice;
 use App\Models\Statuses;
+use App\Models\Expense;
 use App\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -216,12 +217,16 @@ class AdminController extends Controller
     
             $invoices = Invoice::whereBetween('created_at', [$startDate, $endDate])->get();
 
-            return view('components.cash-register', compact('invoices', 'startDate', 'endDate'));
+            $expenses = Expense::whereBetween('created_at', [$startDate, $endDate])->where('status', '=', '1')->get();
+
+            return view('components.cash-register', compact('invoices','expenses', 'startDate', 'endDate'));
         }
         else{
             $invoices = Invoice::all();
 
-            return view('components.cash-register', compact('invoices'));
+            $expenses = Expense::select('*')->where('status', '=', '1')->get();
+
+            return view('components.cash-register', compact('invoices', 'expenses'));
         }
     }
 
@@ -238,6 +243,22 @@ class AdminController extends Controller
             $invoices = Invoice::select('*')->simplePaginate(10);
 
             return view('components.admin-invoices', compact('invoices'));
+        }
+    }
+    public function expensesDates(Request $request){
+
+        if($request->start_date != ''){
+            $startDate = $request->start_date;
+            $endDate = $request->end_date;
+    
+            $expenses = Expense::whereBetween('created_at', [$startDate, $endDate])->simplePaginate(10);
+
+            return view('components.expense-index', compact('expenses'));
+        }
+        else{
+            $expenses = Expense::select('*')->simplePaginate(10);
+
+            return view('components.expense-index', compact('expenses'));
         }
     }
 
