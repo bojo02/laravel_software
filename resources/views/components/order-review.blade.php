@@ -344,7 +344,7 @@
 
         <script>
           function yesnoCheck(that) {
-            if (that.value == "2") {
+            if (that.value == "1") {
               document.getElementById("invoicing").style.display = "block";
             } else if (that.value == "2") {
               document.getElementById("invoicing").style.display = "block";

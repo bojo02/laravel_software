@@ -24,6 +24,7 @@ class OrderController extends Controller
     public function __construct()
     {
             $this->middleware('access_sales', ['only' => ['store', 'create']]);
+            $this->middleware('admin', ['only' => ['destroy']]);
     }
         
 

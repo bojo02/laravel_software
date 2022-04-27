@@ -7,6 +7,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ExpenseController;
+
 
 //MIDDLEWARE
 use App\Http\Middleware\access_sales;
@@ -69,4 +71,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('admin/cash-register', [AdminController::class, 'cashRegister'])->name('admin.cash-register');
     Route::get('admin/invoice{id}', [AdminController::class, 'invoiceShow'])->name('admin.show.invoice');
     Route::get('admin/invoices/dates', [AdminController::class, 'invoicesDates'])->name('admin.invoices.dates');
+
+    //EXPENSE CONTROLS
+    Route::resource('expense', ExpenseController::class);
 });

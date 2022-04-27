@@ -60,6 +60,9 @@
 <div class="sidebar">
 <br>
 <br>
+  @if(Auth::user()->role->slug == 'office')
+  <a class="" href="{{route('expense.index')}}">Заявки</a>
+  @endif
   @if(Auth::user()->role->slug != 'admin')
   <a class="" href="{{route('order.index')}}">Поръчки</a>
   @endif
@@ -72,6 +75,10 @@
   <a class="" href="{{route('admin.new.user')}}">Нов потребител</a>
   <a class="" href="{{route('admin.invoices')}}">Фактури</a>
   <a class="" href="{{route('admin.cash-register')}}">Каса</a>
+  <a class="" href="{{route('expense.index')}}">Заявки</a>
+  @endif
+  @if(Auth::user()->role->slug == 'designer' || Auth::user()->role->slug == 'printer' || Auth::user()->role->slug == 'lastprint' || Auth::user()->role->slug == 'lastdesign')
+  <a class="" href="{{route('expense.create')}}">Създай заявка</a>
   @endif
   
 
