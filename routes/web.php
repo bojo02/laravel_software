@@ -41,6 +41,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::resource('note', NoteController::class);
 
     //ORDER CONTROLS
+    Route::post('order/upload-install-photo{id}', [OrderController::class, 'storeInstallImage'])->name('order.store.install.photo');
     Route::post('order/upload-confirmation-photo{id}', [OrderController::class, 'storeResultImage'])->name('order.storeResultImage');
     Route::get('order/review/{id}', [OrderController::class, 'review'])->name('order.review');
     Route::get('order/sendNewReview/{id}', [OrderController::class, 'sendNewReview'])->name('order.sendNewReview');

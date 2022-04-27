@@ -155,9 +155,13 @@ class OrderController extends Controller
 
         $photo_gallery = Photo::all()->where('order_id', $id)->where('type', 'gallery');
 
+        $photo_install = Photo::all()->where('order_id', $id)->where('type', 'install');
+
         $photo_main = Photo::all()->where('order_id', $id)->where('type', 'main');
 
-        return view('components.order-review', compact('order','photo_main','photo_gallery','statuses'));
+        $photo_main = Photo::all()->where('order_id', $id)->where('type', 'install');
+
+        return view('components.order-review', compact('order','photo_main','photo_gallery','photo_install','statuses'));
     }
 
     public function edit($id)
@@ -205,6 +209,26 @@ class OrderController extends Controller
             'user_id' => Auth::user()->id,
             'order_id' => $id,
             'type' => 'gallery',
+            'path' => $pathimage,
+        ]);
+
+        return redirect()->back()->with('message', 'Резултатът беше качен успешно!');
+    }
+
+    public function storeInstallImage(Request $request, $id){
+
+        $photo_name = $request->file('image')->getClientOriginalName() . date('d-m-Y-H-i');
+ 
+        $photo_path = $request->file('image')->store('/public/images');
+
+        $request->file('image')->move($photo_path, $photo_name);
+
+        $pathimage =  '/' . $photo_path . '/'. $photo_name;
+
+        $photo = Photo::create([
+            'user_id' => Auth::user()->id,
+            'order_id' => $id,
+            'type' => 'install',
             'path' => $pathimage,
         ]);
 

@@ -48,6 +48,27 @@
         </div>
         @endforeach
         @endif
+        @if(!empty($photo_install))
+        @foreach($photo_install as $image)
+        <div class="modal fade " id="a{{$image->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+              <img src="{{$image->path}}" id="image_review" class="rounded mx-auto d-block" alt="Responsive image">
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Затвори</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        @endforeach
+        @endif
 
 
 
@@ -89,8 +110,10 @@
           <hr class="my-4">
           <h4>Формат: {{$order->format->name}}</h4>
           <hr class="my-4">
+
+          <!-- ГЛАВНА СНИМКА -->
+
           <h4>Ориентировъчен дизайн:</h4>
-          <!-- <img src="{{$order->photo}}" class="rounded mx-auto d-block" alt="Responsive image"> -->
           @if(!empty($photo_main))
           @foreach($photo_main as $image)
           <div ng-repeat="post in posts | orderBy:'+':true">
@@ -120,6 +143,7 @@
         @endif
 
         <hr class="my-4">
+        <!-- ВСИЧКИ СНИМКИ ОТ ДИЗАЙНЕР -->
           <h4>Краен резултат:</h4>
           @if(!empty($photo_gallery))
           @foreach($photo_gallery as $image)
@@ -149,6 +173,37 @@
         <br>
         @endforeach
         @endif
+        <!-- ВСИЧКИ МОНТАЖНИ СНИМКИ -->
+        <h4>Монтажен резултат:</h4>
+          @if(!empty($photo_install))
+          @foreach($photo_install as $image)
+          <div ng-repeat="post in posts | orderBy:'+':true">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="panel panel-default">
+                <div class="panel-body line-break">
+                  <div class="row small-gap-row-below">
+                    <div class="col-md-1">
+                      <img id="image_review" src='{{$image->path}}'
+                          alt="Очакване на дизайн" class="img-responsive img-rounded"
+                          style="max-height: 300px; max-width: 300px;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#a{{$image->id}}">
+          Голям екран
+        </button>
+        <a href="{{$image->path}}" download="{{$image->path}}">Изгегли</a>
+        <br>
+        <br>
+        @endforeach
+        @endif
+        <!-- ДИЗАЙНЕР КАЧВАНЕ НА СНИМКА -->
         @if(Auth::user()->role->slug == 'designer')
           <form method="POST" action="{{route('order.storeResultImage', ['id' => $order->id])}}" enctype="multipart/form-data">
             @method('POST')
@@ -159,7 +214,20 @@
             <button type="submit" class="btn btn-success">Качи</button>
         </form>
         @endif
+        <!-- МОНТАЖНА ГРУПА КАЧВАНЕ НА СНИМКА -->
+        @if(Auth::user()->role->slug == 'installation_team')
+          <form method="POST" action="{{route('order.store.install.photo', ['id' => $order->id])}}" enctype="multipart/form-data">
+            @method('POST')
+            @csrf
+            <label class="form-label" for="customFile">Качване на снимка</label>
+            <input name="image" type="file" class="form-control" id="customFile" />
+            <br>
+            <button type="submit" class="btn btn-success">Качи</button>
+        </form>
+        @endif
         <hr class="my-4">
+
+        <!-- ПОКАЗВА БЕЛЕЖКИ И ДОБАВЯНЕ НА БЕЛЕЖКА -->
 
         <h4>Бележки: </h4>
         @foreach($order->notes as $note)
@@ -183,6 +251,7 @@
           
         </div>
         @endforeach
+
         <hr class="my-4">
 
             <!-- Summernote CSS - CDN Link -->
@@ -217,6 +286,7 @@
           <h3>Създадено от: {{$order->user->name}} - {{$order->created_at }}</h3>
           <hr class="my-4">
           <p class="lead">
+            <!-- АМИН ПРОМЯНА НА СТАТУС И ИЗТРИВАНЕ НА ПОРЪЧКА -->
           @if(Auth::user()->role->slug == 'admin')
           <form action="{{route('admin.change.status', ['id' => $order->id])}}" method="POST">
             @method('POST')
@@ -240,6 +310,7 @@
               <button class="btn btn-danger btn-lg" role="button">Изтриване</button>
             </form>
           @endif
+          <!-- ДИЗАЙНЕРА ИЗПРАЩА ЗА ОДОБРЕНИЕ -->
           @if(Auth::user()->role->slug == 'designer' && $order->status_id == 1)
           <form action="{{route('order.review', ['id' => $order->id])}}" method="get">
               @method('get')
@@ -247,13 +318,20 @@
               <button class="btn btn-info btn-lg" role="button">Изпрати за одобрение</button>
           </form>
           @endif
+          <!-- ДИЗАЙНЕРА ИЗПРАЩА КЪМ ДОВЪРШИТЕЛНИ -->
           @if(Auth::user()->role->slug == 'designer' && $order->status_id == 4)
           <form action="{{route('order.lastDesign', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
-              <button class="btn btn-success btn-lg" role="button">Изпрати към довършителни дигитални</button>
+              <button class="btn btn-info btn-lg" role="button">Изпрати към довършителни дигитални</button>
+          </form>
+          <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
+              @method('get')
+              @csrf
+              <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
           </form>
           @endif
+          <!-- ДОВЪРШИТЕЛНИ ДИГИТАЛНИ -->
           @if(Auth::user()->role->slug == 'lastdesign' && $order->status_id == 5)
           <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
               @method('get')
@@ -261,6 +339,7 @@
               <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
           </form>
           @endif
+          <!-- ДОВЪРШИТЕЛНИ ШИРОКОФОРМАТНИ -->
           @if(Auth::user()->role->slug == 'lastprint' && $order->status_id == 6)
           <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
               @method('get')
@@ -268,35 +347,43 @@
               <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
           </form>
           @endif
+          <!-- МОНТАЖНА ГРУПА -->
           @if(Auth::user()->role->slug == 'installation_team' && $order->status_id == 8)
           <form action="{{route('order.installReview', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
-              <button class="btn btn-success btn-lg" role="button">Готово</button>
+              <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
           </form>
           @endif
-          
+          <!-- ПЕЧАТАР ИЗПРАЩА КЪМ ШИРОКОФОРМАТНИ / СКЛАД-->
           @if(Auth::user()->role->slug == 'printer' && $order->status_id == 2)
           <form action="{{route('order.lastPrint', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
-              <button class="btn btn-success btn-lg" role="button">Изпрати към довършителни Широкоформатни</button>
+              <button class="btn btn-info btn-lg" role="button">Изпрати към довършителни Широкоформатни</button>
+          </form>
+          <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
+              @method('get')
+              @csrf
+              <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
           </form>
           @endif
+          <!-- МЕНИДЖЪРА ИЗПРАЩА ЗА НОВ ДИЗАЙН ИЛИ ГО ОДОБРЯВА -->
           @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && $order->status_id == 3)
           <form action="{{route('order.sendNewReview', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
               <button class="btn btn-info btn-lg" role="button">Изпрати за нов дизайн</button>
           </form>
-          @endif
-          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && $order->status_id == 3)
           <form action="{{route('order.designConfirm', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
               <button class="btn btn-success btn-lg" role="button">Одобряване на дизайн</button>
           </form>
+                <p style="display:none;">{{$body = 'Здравейте ' . $order->name . '.%0AТова е автоматичен имейл за одобрение на дизайн.'}}</p>
+          <a class="btn btn-primary" href="mailto:{{$order->email}}?subject=Одобрение на дизайн&body={{$body}}" role="button">Изпрати имейл</a>
           @endif
+          <!-- ОПЦИЯ ДА ВЪРНЕ НАЗАД МЕНИДЖЪРА ПРИ ОБЪРКВАНЕ С МОНТАЖНА ГРУПА -->
           @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && $order->status_id == 9)
           <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
               @method('get')
@@ -304,6 +391,7 @@
               <button class="btn btn-danger btn-lg" role="button">Върни назад</button>
           </form>
           @endif
+          <!-- ФАКТУРИРАНЕ ОТ МЕНИДЖЪРИ -->
           @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && ($order->status_id == 9 ||$order->status_id == 10))
           <form action="{{route('order.done', ['id' => $order->id])}}" method="get">
               @method('get')
@@ -327,6 +415,7 @@
               <button class="btn btn-success btn-lg" role="button">Завърши</button>
           </form>
           @endif
+          <!-- МЕНИДЖЪР ИЗБИРА ДАЛИ ДА ПРЕДАДЕ НА КЛИЕНТ ИЛИ МОНТАЖНА ГРУПА -->
           @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && $order->status_id == 7 )
           <form action="{{route('order.sendToClient', ['id' => $order->id])}}" method="get">
               @method('get')

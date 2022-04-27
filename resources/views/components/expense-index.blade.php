@@ -5,6 +5,7 @@
             <thead class="thead-dark">
                 <tr>
                     <th scope="col">ID</th>
+                    <th scope="col">Заглавие</th>
                     <th scope="col">Потребител</th>
                     <th scope="col">Статус</th>
                     <th scope="col">Преглед</th>
@@ -14,6 +15,7 @@
                 @foreach($expenses as $expense)
                 <tr>
                     <th scope="row">{{$expense->id}}</th>
+                    <td>{{$expense->note}}</td>
                     <td>{{$expense->user->name}}</td>
                     @if($expense->status == 0)
                         <td><span style="color:white;" class="badge bg-success">Нова</span></td>
