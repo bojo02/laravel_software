@@ -316,7 +316,7 @@
                 <option value="3">В брой</option>
             </select>
             <div class="form-group">
-              <div style="display:none;" id="invoicing">
+              <div id="invoicing">
                 <label for="formGroupExampleInput">Номер на фактура</label>
               <input value="{{ old('invoice') }}" name="invoice" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
               </div>
@@ -346,11 +346,13 @@
           function yesnoCheck(that) {
             if (that.value == "2") {
               document.getElementById("invoicing").style.display = "block";
-            } else {
+            } else if (that.value == "2") {
+              document.getElementById("invoicing").style.display = "block";
+            }
+            else{
               document.getElementById("invoicing").style.display = "none";
             }
           }
-
         </script>
 
         @endslot 

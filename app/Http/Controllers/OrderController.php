@@ -279,9 +279,17 @@ class OrderController extends Controller
         return redirect()->back()->with('message', 'Изпратено за фактуриране!');
     }
     public function done(Request $request, $id){
+        $invoice = 0;
         $request->validate([
             'finalprice' => 'required',
             ]);
+
+        if(!$request->has('invoice')){
+            $invoice = 0;
+        }
+        else{
+            $request->invoice;
+        }
         
         $order = Order::find($id);
 
@@ -292,7 +300,7 @@ class OrderController extends Controller
         $order->save();
 
         $invoice = Invoice::create([
-            'number' => $request->invoice,
+            'number' => $invoice,
             'price' => $request->finalprice,
             'order_id' => $id,
             'payment_id' => $request->payment,
