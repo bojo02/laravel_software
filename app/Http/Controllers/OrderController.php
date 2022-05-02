@@ -23,7 +23,7 @@ class OrderController extends Controller
      */
     public function __construct()
     {
-            $this->middleware('access_sales', ['only' => ['store', 'create']]);
+            $this->middleware('access_sales', ['only' => ['store', 'create', 'edit']]);
             $this->middleware('admin', ['only' => ['destroy']]);
     }
         
@@ -60,7 +60,7 @@ class OrderController extends Controller
             return view('components.orders', compact('orders'));
 
         }
-            $orders = Order::select('*')->where('role_id', '=', Auth::user()->role_id)->latest()->simplePaginate(10);
+        $orders = Order::select('*')->where('status_id', '<=', '6')->where('status_id', '!=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->simplePaginate(10);
 
             return view('components.orders', compact('orders'));
     }
@@ -85,28 +85,48 @@ class OrderController extends Controller
     {
         $request->validate([
         'email'=>'required|email|string|max:255',
-        'image' => 'required|image|mimes:jpg,png,jpeg,gif,svg',
+        'file' => 'required',
         'price'=>'required',
-        'title'=>'required',
-        'description'=>'required',
+        'product'=>'required',
+        'vision'=>'required',
+        'media'=>'required',
+        'size'=>'required',
+        'number'=>'required',
+        'laminat'=>'required',
+        'address'=>'required',
+        'term'=>'required',
+        'install'=>'required',
         'name'=>'required',
         'format'=>'required',
        
         ]);
 
-        $photo_name = $request->file('image')->getClientOriginalName() . date('d-m-Y-H-i');
+        $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
  
-        $photo_path = $request->file('image')->store('/public/images');
+        $file_path = $request->file('file')->store('/public/files');
 
-        $request->file('image')->move($photo_path, $photo_name);
+        $request->file('file')->move($file_path, $file_name);
 
-        $pathimage =  '/' . $photo_path . '/'. $photo_name;
+        $pathfile =  '/' . $file_path . '/'. $file_name;
 
         $order = Order::create([
             'role_id' => Auth::user()->role_id,
+            'address' => $request->address,
+            'object' => $request->object,
+            'product' => $request->product,
+            'vision' => $request->vision,
+            'media' => $request->media,
+            'design' => $request->design,
+            'size' => $request->size,
+            'number' => $request->number,
+            'pockets' => $request->pockets,
+            'eyelets' => $request->eyelets,
+            'area' => $request->area,
+            'laminat' => $request->laminat,
+            'term' => $request->term,
+            'install_description' => $request->install,
+            'preprint_description' => $request->preprint,
             'price' => $request->price,
-            'title' => $request->title,
-            'description' => $request->description,
             'name' => $request->name,
             'format_id' => $request->format,
             'phone' => $request->phone,
@@ -118,7 +138,8 @@ class OrderController extends Controller
             'user_id' => Auth::user()->id,
             'order_id' => $order->id,
             'type' => 'main',
-            'path' => $pathimage
+            'path' => $pathfile,
+            'name' => $file_name
         ]);
 
         if($request->format == 1){
@@ -137,6 +158,25 @@ class OrderController extends Controller
         $this->updateStatus($order->id, '2');
 
         return redirect()->back()->with('message', 'Изпратено към печатар');
+    }
+    public function saveFile(Request $request, $id){
+        $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
+ 
+        $file_path = $request->file('file')->store('/public/files');
+
+        $request->file('file')->move($file_path, $file_name);
+
+        $pathfile =  '/' . $file_path . '/'. $file_name;
+
+        $photo = Photo::create([
+            'user_id' => Auth::user()->id,
+            'order_id' => $id,
+            'type' => 'main',
+            'path' => $pathfile,
+            'name' => $file_name
+        ]);
+
+        return redirect()->back()->with('message', 'Файлът е качен успешно!');
     }
 
     private function updateStatus($id, $value){
@@ -159,14 +199,20 @@ class OrderController extends Controller
 
         $photo_main = Photo::all()->where('order_id', $id)->where('type', 'main');
 
-        $photo_main = Photo::all()->where('order_id', $id)->where('type', 'install');
-
         return view('components.order-review', compact('order','photo_main','photo_gallery','photo_install','statuses'));
     }
 
     public function edit($id)
     {
-        //
+        $photo_gallery = Photo::all()->where('order_id', $id)->where('type', 'gallery');
+
+        $photo_install = Photo::all()->where('order_id', $id)->where('type', 'install');
+
+        $photo_main = Photo::all()->where('order_id', $id)->where('type', 'main');
+
+        $order = Order::find($id);
+
+        return view('components.order-edit',compact('order','photo_main','photo_gallery','photo_install'));
     }
     public function update(Request $request, $id)
     {
@@ -210,6 +256,7 @@ class OrderController extends Controller
             'order_id' => $id,
             'type' => 'gallery',
             'path' => $pathimage,
+            'name' => $photo_name,
         ]);
 
         return redirect()->back()->with('message', 'Резултатът беше качен успешно!');
@@ -351,5 +398,4 @@ class OrderController extends Controller
 
         return view('components.orders', compact('orders'));
     }
-    
 }

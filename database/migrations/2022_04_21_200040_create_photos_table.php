@@ -17,6 +17,7 @@ class CreatePhotosTable extends Migration
             $table->id();
             $table->string('path');
             $table->string('type');
+            $table->string('name');
             $table->integer('order_id');
             $table->integer('user_id');
             $table->timestamps();

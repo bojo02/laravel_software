@@ -2,9 +2,6 @@
     <x-layouts.base>
         @slot('content')
         <!-- Modal -->
-
-
-
         @if(!empty($photo_gallery))
         @foreach($photo_gallery as $image)
         <div class="modal fade " id="a{{$image->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
@@ -74,7 +71,7 @@
 
 
         <div class="jumbotron">
-          <h1 class="display-4 d-flex justify-content-center">{{$order->title}}</h1>
+          <h1 class="display-4 d-flex justify-content-center">{{$order->product}}</h1>
           <p class="d-flex justify-content-center"> 
             @if($order->status_id == 1 || $order->status_id == 2)
           <span style="color:white;" class="badge bg-success">{{$order->viewstatus->name}}</span>
@@ -95,8 +92,53 @@
           <span style="color:white;" class="badge bg-danger">{{$order->viewstatus->name}}</span>
         @endif
         </p>
+        <hr class="my-4">
+          <h4>Обект: {{$order->object}}</h4>
           <hr class="my-4">
-          <h3>Описание:<h3><br><p class="lead">{{$order->description}}</p>
+          <h4>Визия: {{$order->vision}}</h4>
+          <hr class="my-4">
+          <h4>Медия: {{$order->media}}</h4>
+          <hr class="my-4">
+          <h4>Размери: {{$order->size}}</h4>
+          <hr class="my-4">
+          <h4>Брой: {{$order->number}}</h4>
+          <hr class="my-4">
+          <h4>Джобове: {{$order->pockets}}</h4>
+          <hr class="my-4">
+          <h4>Капси: {{$order->eyelets}}</h4>
+          <hr class="my-4">
+          <h4>Ламинат: {{$order->laminat}}</h4>
+          <hr class="my-4">
+          <h4>Файл: 
+            <br>
+          @foreach($photo_main as $file)
+           <a href="{{$file->path}}" download>{{$file->name}}</a><br>
+          @endforeach
+          </h4>
+          @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office')
+          <form method="POST" action="{{route('order.store.file', ['id' => $order->id])}}" enctype="multipart/form-data">
+            @method('POST')
+            @csrf
+            <label class="form-label" for="customFile">Качване на файл</label>
+            <input name="file" type="file" class="form-control" id="customFile" />
+            <br>
+            <button type="submit" class="btn btn-success">Качи</button>
+        </form>
+        @endif
+          <hr class="my-4">
+          <h4>Довършителни и дейности: {{$order->term}}</h4>
+          <hr class="my-4">
+          <h4>Монтаж: {{$order->install_description}}</h4>
+          <hr class="my-4">
+          <h4>Дизайн: @if($order->design == 1) 
+          Да  
+          @else
+          Не
+          @endif</h4>
+          <hr class="my-4">
+          <h4>Препечат: {{$order->preprint_description}}</h4>
+
+
           @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office' || Auth::user()->role->slug == 'admin'))
           <hr class="my-4">
           <h4>Име / Фирма: {{$order->name}}</h4>
@@ -111,42 +153,11 @@
           <h4>Формат: {{$order->format->name}}</h4>
           <hr class="my-4">
 
-          <!-- ГЛАВНА СНИМКА -->
-
-          <h4>Ориентировъчен дизайн:</h4>
-          @if(!empty($photo_main))
-          @foreach($photo_main as $image)
-          <div ng-repeat="post in posts | orderBy:'+':true">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="panel panel-default">
-                <div class="panel-body line-break">
-                  <div class="row small-gap-row-below">
-                    <div class="col-md-1">
-                      <img id="{{$image->path}}" src='{{$image->path}}'
-                          alt="Очакване на дизайн" class="img-responsive img-rounded"
-                          style="max-height: 300px; max-width: 300px;">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#a{{$image->id}}">
-          Голям екран
-        </button> 
-        <a href="{{$image->path}}" download="{{$image->path}}">Изгегли</a>
-        <br>
-        @endforeach
-        @endif
 
         <hr class="my-4">
         <!-- ВСИЧКИ СНИМКИ ОТ ДИЗАЙНЕР -->
           <h4>Краен резултат:</h4>
-          @if(!empty($photo_gallery))
-          @foreach($photo_gallery as $image)
+          @forelse($photo_gallery as $image)
           <div ng-repeat="post in posts | orderBy:'+':true">
           <div class="row">
             <div class="col-md-12">
@@ -171,40 +182,11 @@
         <a href="{{$image->path}}" download="{{$image->path}}">Изгегли</a>
         <br>
         <br>
-        @endforeach
-        @endif
-        <!-- ВСИЧКИ МОНТАЖНИ СНИМКИ -->
-        <h4>Монтажен резултат:</h4>
-          @if(!empty($photo_install))
-          @foreach($photo_install as $image)
-          <div ng-repeat="post in posts | orderBy:'+':true">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="panel panel-default">
-                <div class="panel-body line-break">
-                  <div class="row small-gap-row-below">
-                    <div class="col-md-1">
-                      <img id="image_review" src='{{$image->path}}'
-                          alt="Очакване на дизайн" class="img-responsive img-rounded"
-                          style="max-height: 300px; max-width: 300px;">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#a{{$image->id}}">
-          Голям екран
-        </button>
-        <a href="{{$image->path}}" download="{{$image->path}}">Изгегли</a>
-        <br>
-        <br>
-        @endforeach
-        @endif
-        <!-- ДИЗАЙНЕР КАЧВАНЕ НА СНИМКА -->
-        @if(Auth::user()->role->slug == 'designer')
+        @empty
+          <p>Няма открити файлове...</p>
+        @endforelse
+         <!-- ДИЗАЙНЕР КАЧВАНЕ НА СНИМКА -->
+         @if(Auth::user()->role->slug == 'designer')
           <form method="POST" action="{{route('order.storeResultImage', ['id' => $order->id])}}" enctype="multipart/form-data">
             @method('POST')
             @csrf
@@ -214,6 +196,38 @@
             <button type="submit" class="btn btn-success">Качи</button>
         </form>
         @endif
+        <hr class="my-4">
+        <!-- ВСИЧКИ МОНТАЖНИ СНИМКИ -->
+        <h4>Монтажен резултат:</h4>
+          @forelse($photo_install as $image)
+          <div ng-repeat="post in posts | orderBy:'+':true">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="panel panel-default">
+                <div class="panel-body line-break">
+                  <div class="row small-gap-row-below">
+                    <div class="col-md-1">
+                      <img id="image_review" src='{{$image->path}}'
+                          alt="Очакване на дизайн" class="img-responsive img-rounded"
+                          style="max-height: 300px; max-width: 300px;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#a{{$image->id}}">
+          Голям екран
+        </button>
+        <a href="{{$image->path}}" download="{{$image->path}}">Изгегли</a>
+        <br>
+        <br>
+        @empty
+          <p>Няма открити файлове...</p>
+        @endforelse
+       
         <!-- МОНТАЖНА ГРУПА КАЧВАНЕ НА СНИМКА -->
         @if(Auth::user()->role->slug == 'installation_team')
           <form method="POST" action="{{route('order.store.install.photo', ['id' => $order->id])}}" enctype="multipart/form-data">
@@ -239,11 +253,11 @@
           <ul class="list-group list-group-flush">
         
             <li class="list-group-item">{!! $note->content !!}<span>
-              @if(Auth::user()->id == $note->user_id)
+              @if(Auth::user()->role->slug == 'admin')
             <form action="{{route('note.destroy', ['note' => $note->id])}}" method="POST">
             @method('DELETE')
             @csrf
-            <!-- <button class="btn btn-danger btn-lg" role="button">Изтриване</button> -->
+            <button class="btn btn-danger btn-lg" role="button">Изтриване</button> 
           </form>
           @endif</span></li>
             
@@ -399,9 +413,9 @@
               <div class="form-group">
             <label for="formGroupExampleInput">Начин на плащане</label>
             <select onchange="yesnoCheck(this);" name="payment" class="form-control form-control-lg">
-                <option value="1">Банка в брой</option>
-                <option value="2">Банков път</option>
-                <option value="3">В брой</option>
+                <option value="1">По банка с фактура</option>
+                <option value="2">На каса с фактура</option>
+                <option value="3">На каса без фактура</option>
             </select>
             <div class="form-group">
               <div id="invoicing">

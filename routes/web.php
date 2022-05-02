@@ -8,6 +8,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\SignaturePadController;
 
 
 //MIDDLEWARE
@@ -43,6 +44,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     //ORDER CONTROLS
     Route::post('order/upload-install-photo{id}', [OrderController::class, 'storeInstallImage'])->name('order.store.install.photo');
     Route::post('order/upload-confirmation-photo{id}', [OrderController::class, 'storeResultImage'])->name('order.storeResultImage');
+    Route::post('order/storefile/{id}', [OrderController::class, 'saveFile'])->name('order.store.file');
     Route::get('order/review/{id}', [OrderController::class, 'review'])->name('order.review');
     Route::get('order/sendNewReview/{id}', [OrderController::class, 'sendNewReview'])->name('order.sendNewReview');
     Route::get('order/designConfirm/{id}', [OrderController::class, 'designConfirm'])->name('order.designConfirm');
@@ -76,4 +78,10 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     //EXPENSE CONTROLS
     Route::resource('expense', ExpenseController::class);
+
+      
+
+Route::get('signaturepad', [SignaturePadController::class, 'index']);
+
+Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');
 });

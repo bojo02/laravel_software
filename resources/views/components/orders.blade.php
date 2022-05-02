@@ -34,7 +34,7 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">ID</th>
-      <th scope="col">Заглавие</th>
+      <th scope="col">Продукт</th>
       <th scope="col">Име / фирма</th>
       <th scope="col">Имейл</th>
       <th scope="col">В наличност</th>
@@ -46,7 +46,7 @@
       @foreach($orders as $order)
       <tr>
         <th scope="row">{{$order->id}}</th>
-        <td>{{$order->title}}</td>
+        <td>{{$order->product}}</td>
         <td>{{$order->name}}</td>
         <td>{{$order->email}}</td>
         @if($order->in_stock)
@@ -87,9 +87,15 @@
           <td><span style="color:white;" class="badge bg-danger">{{$order->viewstatus->name}}</span></td>
         @endif
 
-        <form method="GET" action="{{route('order.show', ['order' => $order->id])}}">
+        @if($order->viewstatus->id == 1 || $order->viewstatus->id == 2)
+        <form method="GET" action="{{route('order.edit', ['order' => $order->id])}}">
           <td><button type="submit" class="btn btn-primary">Преглед</button></td>
       </form>
+      @else
+      form method="GET" action="{{route('order.show', ['order' => $order->id])}}">
+          <td><button type="submit" class="btn btn-primary">Преглед</button></td>
+      </form>
+      @endif
     </tr>
       @endforeach
   </tbody>

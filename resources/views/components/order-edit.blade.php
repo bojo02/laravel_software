@@ -1,7 +1,7 @@
 <div>
 <x-layouts.base>
     @slot('content')
-    <h2>Създаване на поръчка</h2>
+    <h2>Редактиране на поръчка</h2>
 
     <div id="shiroko" >
     <form method="POST" action="{{route('order.store')}}" enctype="multipart/form-data">
@@ -9,90 +9,106 @@
     @csrf
         <div class="form-group">
             <label for="formGroupExampleInput">Обект</label>
-            <textarea id="object" value="{{ old('object') }}" name="object" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="object" value="{{ old('object') }}" name="object" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->object }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Продукт</label>
-            <textarea id="product" value="{{ old('product') }}" name="product" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="product" value="{{ old('product') }}" name="product" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->product }}</textarea>
         </div>
        
         <div class="form-group">
             <label for="formGroupExampleInput">Визия</label>
-            <textarea id="vision" value="{{ old('vision') }}" name="vision" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="vision" value="{{ old('vision') }}" name="vision" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->vision }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Медия</label>
-            <textarea id="media" value="{{ old('media') }}" name="media" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="media" value="{{ old('media') }}" name="media" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->media }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Размери</label>
-            <textarea id="size" value="{{ old('size') }}" name="size" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="size" value="{{ old('size') }}" name="size" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->size }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Брой</label>
-            <textarea id="number" value="{{ old('number') }}" name="number" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="number" value="{{ old('number') }}" name="number" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->number }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Джобове</label>
-            <textarea id="pockets" value="{{ old('pockets') }}" name="pockets" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="pockets" value="{{ old('pockets') }}" name="pockets" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->pockets }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Капси</label>
-            <textarea id="eyelets" value="{{ old('eyelets') }}" name="eyelets" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="eyelets" value="{{ old('eyelets') }}" name="eyelets" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->eyelets }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Ламинат</label>
-            <textarea id="laminat" value="{{ old('laminat') }}" name="laminat" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="laminat" value="{{ old('laminat') }}" name="laminat" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->laminat }}</textarea>
         </div>
-        <div class="form-group">
-            <label class="form-label" for="customFile">Файл</label>
-            <input value="{{ old('file') }}" name="file" type="file" class="form-control" id="customFile" />
-        </div>
+        @foreach($photo_main as $file)
+           <a href="{{$file->path}}" download>{{$file->name}}</a><br>
+          @endforeach
+          </h4>
+          @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office')
+          <form method="POST" action="{{route('order.store.file', ['id' => $order->id])}}" enctype="multipart/form-data">
+            @method('POST')
+            @csrf
+            <label class="form-label" for="customFile">Качване на файл</label>
+            <input name="file" type="file" class="form-control" id="customFile" />
+            <br>
+            <button type="submit" class="btn btn-success">Качи</button>
+        </form>
+        @endif
         <div class="form-group">
             <label for="formGroupExampleInput">Довършителни и дейности</label>
-            <textarea id="term" value="{{ old('term') }}" name="term" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="term" value="{{ old('term') }}" name="term" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->term }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Описание за монтаж</label>
-            <textarea id="install" value="{{ old('install') }}" name="install" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="install" value="{{ old('install') }}" name="install" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->install_description }}</textarea>
         </div>
         <div id="area" class="form-group">
             <label for="formGroupExampleInput">Площ</label>
-            <textarea id="area" value="{{ old('area') }}" name="area" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="area" value="{{ old('area') }}" name="area" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->area }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Дизайн</label>
             <select name="design" class="form-control form-control-lg">
-                <option value="1">Да</option>
+            @if($order->design == 1) 
+                <option  selected value="1">Да</option>
                 <option value="2">Не</option>
+                @else
+                <option  value="1">Да</option>
+                <option selected value="2">Не</option>
+            @endif
+                
             </select>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Предпечат</label>
-            <textarea id="preprint" value="{{ old('preprint') }}" name="preprint" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="preprint" name="preprint" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->preprint_description }}</textarea>
         </div>
         
         <div class="form-group">
             <label for="formGroupExampleInput">Имейл</label>
-            <input value="{{ old('email') }}" name="email" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
+            <input name="email" type="text" class="form-control" value="{{ $order->email }}" id="formGroupExampleInput" placeholder="">
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Адрес</label>
-            <input value="{{ old('address') }}" name="address" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
+            <input name="address" type="text" class="form-control" value="{{ $order->address }}" id="formGroupExampleInput" placeholder="">
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Телефон</label>
-            <input value="{{ old('phone') }}" name="phone" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
+            <input name="phone" type="text" class="form-control" value="{{ $order->phone }}" id="formGroupExampleInput" placeholder="">
         
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Име /  Фирма</label>
-            <input value="{{ old('name') }}" name="name" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
+            <input name="name" type="text" class="form-control" value="{{ $order->name }}" id="formGroupExampleInput" placeholder="">
         </div>
         <input type="hidden"name="format" value="1">
         <div class="form-group">
             <label for="formGroupExampleInput">Сума</label>
-            <input value="{{ old('price') }}" name="price" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
+            <input name="price" type="text" value="{{ $order->price }}" class="form-control" id="formGroupExampleInput" placeholder="">
         </div>
 
         <div class="form-group">
@@ -103,7 +119,7 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success">Създай</button>
+        <button type="submit" class="btn btn-success">Запази</button>
         <br>
         <br>
     </form>

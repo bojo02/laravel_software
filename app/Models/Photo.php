@@ -9,7 +9,7 @@ class Photo extends Model
 {
     use HasFactory;
     
-    protected $fillable = ['user_id', 'order_id', 'path', 'type'];
+    protected $fillable = ['user_id', 'order_id', 'path', 'type', 'name'];
 
     public function order(){
         $this->belongsTo(Order::class);

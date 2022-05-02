@@ -46,7 +46,7 @@
     </tr>
   </thead>
   <tbody>
-      @foreach($orders as $order)
+      @forelse($orders as $order)
       <tr>
         <th scope="row">{{$order->id}}</th>
         <td>{{$order->title}}</td>
@@ -93,8 +93,12 @@
         <form method="GET" action="{{route('order.show', ['order' => $order->id])}}">
           <td><button type="submit" class="btn btn-primary">Преглед</button></td>
       </form>
+      
     </tr>
-      @endforeach
+      @empty
+       
+        
+      @endforelse
   </tbody>
 </table>
 
