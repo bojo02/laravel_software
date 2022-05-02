@@ -13,13 +13,11 @@
     @csrf
 
         <div class="form-group">
-            <label for="exampleInputEmail1">Промяна на имейл адрес</label>
-            <input name="email" value="{{$user->email}}" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+            <label for="exampleInputEmail1">Имейл адрес</label>
+           <h4>{{$user->email}}</h4>
             
         </div>
-        <div class="form-group">
-        <button type="button" class="btn btn-info">Промяна на парола</button>
-        </div>
+
             <h4>Автоманично презареждане на страниците през 1 минута</h4>
         <div class="form-check">
             <input value="1" class="form-check-input" type="radio" name="autorefresh" id="flexRadioDefault1" @if(Auth::user()->auto_refresh == 1) checked @endif>

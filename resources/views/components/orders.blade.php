@@ -21,7 +21,7 @@
                     </li>
                     <p>&#160;&nbsp;<p>
                 </ul>
-                    <input class="form-control mr-sm-2" name="search" type="search" placeholder="Търсене по заглавие" aria-label="Search">
+                    <input class="form-control mr-sm-2" name="search" type="search" placeholder="Търсене по продукт" aria-label="Search">
                     <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Търси</button>
                 </form>
             </div>
@@ -46,7 +46,7 @@
       @foreach($orders as $order)
       <tr>
         <th scope="row">{{$order->id}}</th>
-        <td>{{$order->product}}</td>
+        <td>{!! $order->product !!}</td>
         <td>{{$order->name}}</td>
         <td>{{$order->email}}</td>
         @if($order->in_stock)
@@ -87,12 +87,12 @@
           <td><span style="color:white;" class="badge bg-danger">{{$order->viewstatus->name}}</span></td>
         @endif
 
-        @if($order->viewstatus->id == 1 || $order->viewstatus->id == 2)
+        @if(($order->viewstatus->id == 1 || $order->viewstatus->id == 2) && (Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office'))
         <form method="GET" action="{{route('order.edit', ['order' => $order->id])}}">
           <td><button type="submit" class="btn btn-primary">Преглед</button></td>
       </form>
       @else
-      form method="GET" action="{{route('order.show', ['order' => $order->id])}}">
+      <form method="GET" action="{{route('order.show', ['order' => $order->id])}}">
           <td><button type="submit" class="btn btn-primary">Преглед</button></td>
       </form>
       @endif

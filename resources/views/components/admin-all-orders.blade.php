@@ -20,6 +20,7 @@
                     <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
                     <div class="form-group">
                         <select name="status" class="form-control form-control-lg">
+                          <option value="all">Всички</option>
                           @foreach($statuses as $status)
                             <option value="{{$status->id}}">{{$status->name}}</option>
                           @endforeach
@@ -37,7 +38,7 @@
   <thead class="thead-dark">
     <tr>
       <th scope="col">ID</th>
-      <th scope="col">Заглавие</th>
+      <th scope="col">Продукт</th>
       <th scope="col">Име / фирма</th>
       <th scope="col">Имейл</th>
       <th scope="col">В наличност</th>
@@ -49,7 +50,7 @@
       @forelse($orders as $order)
       <tr>
         <th scope="row">{{$order->id}}</th>
-        <td>{{$order->title}}</td>
+        <td><p>{!! $order->product !!}</p></td>
         <td>{{$order->name}}</td>
         <td>{{$order->email}}</td>
         @if($order->in_stock)

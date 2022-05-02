@@ -15,7 +15,7 @@
                 @foreach($expenses as $expense)
                 <tr>
                     <th scope="row">{{$expense->id}}</th>
-                    <td>{{$expense->note}}</td>
+                    <td>{!! $expense->note !!}</td>
                     <td>{{$expense->user->name}}</td>
                     @if($expense->status == 0)
                         <td><span style="color:white;" class="badge bg-success">Нова</span></td>

@@ -178,6 +178,25 @@ class OrderController extends Controller
 
         return redirect()->back()->with('message', 'Файлът е качен успешно!');
     }
+    public function saveDesign(Request $request, $id){
+        $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
+ 
+        $file_path = $request->file('file')->store('/public/files');
+
+        $request->file('file')->move($file_path, $file_name);
+
+        $pathfile =  '/' . $file_path . '/'. $file_name;
+
+        $photo = Photo::create([
+            'user_id' => Auth::user()->id,
+            'order_id' => $id,
+            'type' => 'gallery',
+            'path' => $pathfile,
+            'name' => $file_name
+        ]);
+
+        return redirect()->back()->with('message', 'Файлът е качен успешно!');
+    }
 
     private function updateStatus($id, $value){
         $order = Order::find($id);
@@ -212,11 +231,84 @@ class OrderController extends Controller
 
         $order = Order::find($id);
 
+        if($order->status_id > 2 && Auth::user()->role->slug != 'admin'){
+            return redirect()->back()->with('warning', 'Нямаш достъп до тази страница!');
+        }
+
         return view('components.order-edit',compact('order','photo_main','photo_gallery','photo_install'));
     }
     public function update(Request $request, $id)
     {
-        //
+        $order = Order::find($id);
+        
+        $order->name = $request->name;
+
+        $order->email = $request->email;
+
+        $order->address = $request->address;
+
+        $order->phone = $request->phone;
+
+        $order->object = $request->object;
+
+        $order->product = $request->product;
+
+        $order->vision = $request->vision;
+
+        $order->media = $request->media;
+
+        $order->size = $request->size;
+
+        $order->number = $request->number;
+
+        $order->pockets = $request->pockets;
+
+        $order->eyelets = $request->eyelets;
+
+        $order->area = $request->area;
+
+        $order->laminat = $request->laminat;
+
+        $order->term = $request->term;
+
+        $order->design = $request->design;
+
+        $order->install_description = $request->install;
+
+        $order->preprint_description = $request->preprint;
+
+        $order->price = $request->price;
+
+        $order->format_id = $request->format;
+
+        $order->save();
+
+        if($request->file('file')){
+            $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
+ 
+            $file_path = $request->file('file')->store('/public/files');
+    
+            $request->file('file')->move($file_path, $file_name);
+    
+            $pathfile =  '/' . $file_path . '/'. $file_name;
+    
+            $photo = Photo::create([
+                'user_id' => Auth::user()->id,
+                'order_id' => $id,
+                'type' => 'main',
+                'path' => $pathfile,
+                'name' => $file_name
+            ]);
+        }
+
+        if($request->format == 1){
+            $this->updateStatus($order->id, '1');
+        }
+        else{
+            $this->updateStatus($order->id, '2');
+        }
+
+        return redirect()->back()->with('message', 'Поръчката е редактирана успешно!');
     }
 
     public function destroy($id)
@@ -276,6 +368,7 @@ class OrderController extends Controller
             'user_id' => Auth::user()->id,
             'order_id' => $id,
             'type' => 'install',
+            'name' => $photo_name,
             'path' => $pathimage,
         ]);
 
@@ -384,16 +477,16 @@ class OrderController extends Controller
     public function searchOrders(Request $request){
         if($request->order_status == 1){
 
-            $orders = Order::select('*')->where('status_id', '<=', '6')->where('status_id', '!=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->simplePaginate(10);
+            $orders = Order::select('*')->where('status_id', '<=', '6')->where('status_id', '!=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
         }
         else if($request->order_status == 2){
-            $orders = Order::select('*')->where('status_id', '=', '9')->where('role_id', '=', Auth::user()->role_id)->latest()->simplePaginate(10);
+            $orders = Order::select('*')->where('status_id', '=', '9')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
         }
         else if($request->order_status == 3){
-            $orders = Order::select('*')->where('in_stock', '=', '1')->where('status_id', '!=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->simplePaginate(10);
+            $orders = Order::select('*')->where('in_stock', '=', '1')->where('status_id', '!=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
         }
         else if($request->order_status == 4){
-            $orders = Order::select('*')->where('status_id', '=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->simplePaginate(10);
+            $orders = Order::select('*')->where('status_id', '=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
         }
 
         return view('components.orders', compact('orders'));

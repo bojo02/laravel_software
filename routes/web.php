@@ -45,6 +45,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('order/upload-install-photo{id}', [OrderController::class, 'storeInstallImage'])->name('order.store.install.photo');
     Route::post('order/upload-confirmation-photo{id}', [OrderController::class, 'storeResultImage'])->name('order.storeResultImage');
     Route::post('order/storefile/{id}', [OrderController::class, 'saveFile'])->name('order.store.file');
+    Route::post('order/storedesign/{id}', [OrderController::class, 'saveDesign'])->name('order.store.design');
     Route::get('order/review/{id}', [OrderController::class, 'review'])->name('order.review');
     Route::get('order/sendNewReview/{id}', [OrderController::class, 'sendNewReview'])->name('order.sendNewReview');
     Route::get('order/designConfirm/{id}', [OrderController::class, 'designConfirm'])->name('order.designConfirm');

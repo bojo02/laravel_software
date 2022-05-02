@@ -197,14 +197,27 @@ class AdminController extends Controller
     }
     public function searchOrders(Request $request){
 
-        if($request->old == 1){
+        if($request->status == 'all'){
+            if($request->old == 1){
 
-            $orders = Order::select('*')->where('status_id', $request->status)->latest()->where('title', 'LIKE', "%{$request->search}%")->simplePaginate(10);
+                $orders = Order::select('*')->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
+            }
+            else{
+    
+                $orders = Order::select('*')->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
+            }
         }
         else{
+            if($request->old == 1){
 
-            $orders = Order::select('*')->where('status_id', $request->status)->where('title', 'LIKE', "%{$request->search}%")->simplePaginate(10);
+                $orders = Order::select('*')->where('status_id', $request->status)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
+            }
+            else{
+    
+                $orders = Order::select('*')->where('status_id', $request->status)->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
+            }
         }
+        
         $statuses = Statuses::all();
 
         return view('components.admin-all-orders', compact('orders', 'statuses'));

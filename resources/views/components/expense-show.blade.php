@@ -7,7 +7,7 @@
             </div>
             <div class="card-body">
                 <h5 class="card-title">{{$expense->user->name}}</h5>
-                <p class="card-text">{{$expense->note}}</p>
+                <p class="card-text">{!!$expense->note!!}</p>
                 <form method="post", action="{{route('expense.update', ['expense' => $expense->id])}}">
                  @METHOD('PATCH')
                     @CSRF

@@ -71,7 +71,7 @@
 
 
         <div class="jumbotron">
-          <h1 class="display-4 d-flex justify-content-center">{{$order->product}}</h1>
+          <h1 class="display-4 d-flex justify-content-center">{!!$order->product!!}</h1>
           <p class="d-flex justify-content-center"> 
             @if($order->status_id == 1 || $order->status_id == 2)
           <span style="color:white;" class="badge bg-success">{{$order->viewstatus->name}}</span>
@@ -93,21 +93,21 @@
         @endif
         </p>
         <hr class="my-4">
-          <h4>Обект: {{$order->object}}</h4>
+          <h4>Обект: {!! $order->object!!}</h4>
           <hr class="my-4">
-          <h4>Визия: {{$order->vision}}</h4>
+          <h4>Визия: {!!$order->vision!!}</h4>
           <hr class="my-4">
-          <h4>Медия: {{$order->media}}</h4>
+          <h4>Медия: {!!$order->media!!}</h4>
           <hr class="my-4">
-          <h4>Размери: {{$order->size}}</h4>
+          <h4>Размери: {!!$order->size!!}</h4>
           <hr class="my-4">
-          <h4>Брой: {{$order->number}}</h4>
+          <h4>Брой: {!!$order->number!!}</h4>
           <hr class="my-4">
-          <h4>Джобове: {{$order->pockets}}</h4>
+          <h4>Джобове: {!!$order->pockets!!}</h4>
           <hr class="my-4">
-          <h4>Капси: {{$order->eyelets}}</h4>
+          <h4>Капси: {!!$order->eyelets!!}</h4>
           <hr class="my-4">
-          <h4>Ламинат: {{$order->laminat}}</h4>
+          <h4>Ламинат: {!!$order->laminat!!}</h4>
           <hr class="my-4">
           <h4>Файл: 
             <br>
@@ -126,9 +126,9 @@
         </form>
         @endif
           <hr class="my-4">
-          <h4>Довършителни и дейности: {{$order->term}}</h4>
+          <h4>Довършителни и дейности: {!!$order->term!!}</h4>
           <hr class="my-4">
-          <h4>Монтаж: {{$order->install_description}}</h4>
+          <h4>Монтаж: {!!$order->install_description!!}</h4>
           <hr class="my-4">
           <h4>Дизайн: @if($order->design == 1) 
           Да  
@@ -151,47 +151,24 @@
           @endif
           <hr class="my-4">
           <h4>Формат: {{$order->format->name}}</h4>
-          <hr class="my-4">
+         
 
 
         <hr class="my-4">
         <!-- ВСИЧКИ СНИМКИ ОТ ДИЗАЙНЕР -->
           <h4>Краен резултат:</h4>
-          @forelse($photo_gallery as $image)
-          <div ng-repeat="post in posts | orderBy:'+':true">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="panel panel-default">
-                <div class="panel-body line-break">
-                  <div class="row small-gap-row-below">
-                    <div class="col-md-1">
-                      <img id="image_review" src='{{$image->path}}'
-                          alt="Очакване на дизайн" class="img-responsive img-rounded"
-                          style="max-height: 300px; max-width: 300px;">
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#a{{$image->id}}">
-          Голям екран
-        </button>
-        <a href="{{$image->path}}" download="{{$image->path}}">Изгегли</a>
-        <br>
-        <br>
-        @empty
-          <p>Няма открити файлове...</p>
-        @endforelse
+          @foreach($photo_gallery as $file)
+           <a href="{{$file->path}}" download>{{$file->name}}</a><br>
+          @endforeach
          <!-- ДИЗАЙНЕР КАЧВАНЕ НА СНИМКА -->
-         @if(Auth::user()->role->slug == 'designer')
-          <form method="POST" action="{{route('order.storeResultImage', ['id' => $order->id])}}" enctype="multipart/form-data">
+        
+          </h4>
+          @if(Auth::user()->role->slug == 'designer')
+          <form method="POST" action="{{route('order.store.design', ['id' => $order->id])}}" enctype="multipart/form-data">
             @method('POST')
             @csrf
-            <label class="form-label" for="customFile">Качване на снимка</label>
-            <input name="image" type="file" class="form-control" id="customFile" />
+            <label class="form-label" for="customFile">Качване на файл</label>
+            <input name="file" type="file" class="form-control" id="customFile" />
             <br>
             <button type="submit" class="btn btn-success">Качи</button>
         </form>
@@ -295,10 +272,19 @@
             </script>
 
 
-        <hr class="my-4">
+       
           <hr class="my-4">
           <h3>Създадено от: {{$order->user->name}} - {{$order->created_at }}</h3>
           <hr class="my-4">
+          @if($order->status_id == 10)
+                @if($order->delivery_id == 1)
+                  <h3>Извършен монтаж</h3>
+                  @else
+                  <h3>Предадено на клиент/h3>
+                @endif 
+                <hr class="my-4">
+          @endif
+          
           <p class="lead">
             <!-- АМИН ПРОМЯНА НА СТАТУС И ИЗТРИВАНЕ НА ПОРЪЧКА -->
           @if(Auth::user()->role->slug == 'admin')
@@ -318,6 +304,9 @@
             </div>
               <button class="btn btn-info btn-lg" role="button">Смени статус</button>
             </form>
+            <form method="GET" action="{{route('order.edit', ['order' => $order->id])}}">
+            <td><button type="submit" class="btn btn-primary">Редактиране</button></td>
+         </form>
             <form action="{{route('order.destroy', ['order' => $order->id])}}" method="POST">
               @method('DELETE')
               @csrf
