@@ -195,6 +195,13 @@ class AdminController extends Controller
             }
             return view('components.admin-invoices', compact('invoices'));
     }
+    public function destroyInvoice($id){
+        $invoice = Invoice::find($id);
+
+        Invoice::destroy($invoice->id);
+
+        return redirect(route('admin.invoices'))->with('message', 'Фактурата е изтрита!');
+    }
     public function searchOrders(Request $request){
 
         if($request->status == 'all'){

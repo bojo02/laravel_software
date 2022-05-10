@@ -62,6 +62,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     //ADMIN CONTROLS
     Route::get('admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::post('admin/invoice/destroy/{id}', [AdminController::class, 'destroyInvoice'])->name('admin.destroy.invoice');
     Route::get('admin/users/{id}', [AdminController::class, 'user'])->name('admin.user');
     Route::post('admin/user/update/{id}', [AdminController::class, 'userUpdate'])->name('admin.userUpdate');
     Route::post('admin/user/password/update/{id}', [AdminController::class, 'userPasswordUpdate'])->name('admin.user.password.pdate');

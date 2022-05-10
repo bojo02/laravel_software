@@ -87,15 +87,10 @@
           <td><span style="color:white;" class="badge bg-danger">{{$order->viewstatus->name}}</span></td>
         @endif
 
-        @if(($order->viewstatus->id == 1 || $order->viewstatus->id == 2) && (Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office'))
-        <form method="GET" action="{{route('order.edit', ['order' => $order->id])}}">
-          <td><button type="submit" class="btn btn-primary">Преглед</button></td>
-      </form>
-      @else
+        
       <form method="GET" action="{{route('order.show', ['order' => $order->id])}}">
           <td><button type="submit" class="btn btn-primary">Преглед</button></td>
       </form>
-      @endif
     </tr>
       @endforeach
   </tbody>

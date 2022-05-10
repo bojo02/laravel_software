@@ -1,6 +1,7 @@
 <div>
     <x-layouts.base>
         @slot('content')
+       
         <!-- Modal -->
         @if(!empty($photo_gallery))
         @foreach($photo_gallery as $image)
@@ -66,11 +67,18 @@
         </div>
         @endforeach
         @endif
-
+  
 
 
 
         <div class="jumbotron">
+
+        @if(($order->viewstatus->id == 1 || $order->viewstatus->id == 2) && (Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office'))
+        <form method="GET" action="{{route('order.edit', ['order' => $order->id])}}">
+          <td><button type="submit" class="btn btn-primary">Редактиране</button></td>
+      </form>
+      @endif
+
           <h1 class="display-4 d-flex justify-content-center">{!!$order->product!!}</h1>
           <p class="d-flex justify-content-center"> 
             @if($order->status_id == 1 || $order->status_id == 2)
@@ -115,16 +123,6 @@
            <a href="{{$file->path}}" download>{{$file->name}}</a><br>
           @endforeach
           </h4>
-          @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office')
-          <form method="POST" action="{{route('order.store.file', ['id' => $order->id])}}" enctype="multipart/form-data">
-            @method('POST')
-            @csrf
-            <label class="form-label" for="customFile">Качване на файл</label>
-            <input name="file" type="file" class="form-control" id="customFile" />
-            <br>
-            <button type="submit" class="btn btn-success">Качи</button>
-        </form>
-        @endif
           <hr class="my-4">
           <h4>Довършителни и дейности: {!!$order->term!!}</h4>
           <hr class="my-4">
@@ -132,11 +130,22 @@
           <hr class="my-4">
           <h4>Дизайн: @if($order->design == 1) 
           Да  
+          <hr class="my-4">
+          <h4>Файлове за дизайн: 
+            <br>
+          @foreach($photo_design as $file)
+           <a href="{{$file->path}}" download>{{$file->name}}</a><br>
+          @endforeach
+          </h4>
+          <hr class="my-4">
+          <h4>Бележка към дизайна: {!!$order->design_description!!}</h4>
           @else
           Не
           @endif</h4>
+   
+         
           <hr class="my-4">
-          <h4>Препечат: {{$order->preprint_description}}</h4>
+          <h4>Предпечат: {{$order->preprint_description}}</h4>
 
 
           @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office' || Auth::user()->role->slug == 'admin'))
@@ -168,7 +177,7 @@
             @method('POST')
             @csrf
             <label class="form-label" for="customFile">Качване на файл</label>
-            <input name="file" type="file" class="form-control" id="customFile" />
+            <input name="designer_files[]" type="file" multiple class="form-control" id="customFile" />
             <br>
             <button type="submit" class="btn btn-success">Качи</button>
         </form>
@@ -211,7 +220,7 @@
             @method('POST')
             @csrf
             <label class="form-label" for="customFile">Качване на снимка</label>
-            <input name="image" type="file" class="form-control" id="customFile" />
+            <input name="install_files[]" type="file" multiple class="form-control" id="customFile" />
             <br>
             <button type="submit" class="btn btn-success">Качи</button>
         </form>

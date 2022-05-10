@@ -85,7 +85,7 @@ class OrderController extends Controller
     {
         $request->validate([
         'email'=>'required|email|string|max:255',
-        'file' => 'required',
+        'main_files' => 'required',
         'price'=>'required',
         'product'=>'required',
         'vision'=>'required',
@@ -93,21 +93,12 @@ class OrderController extends Controller
         'size'=>'required',
         'number'=>'required',
         'laminat'=>'required',
-        'address'=>'required',
         'term'=>'required',
         'install'=>'required',
         'name'=>'required',
         'format'=>'required',
        
         ]);
-
-        $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
- 
-        $file_path = $request->file('file')->store('/public/files');
-
-        $request->file('file')->move($file_path, $file_name);
-
-        $pathfile =  '/' . $file_path . '/'. $file_name;
 
         $order = Order::create([
             'role_id' => Auth::user()->role_id,
@@ -124,6 +115,7 @@ class OrderController extends Controller
             'area' => $request->area,
             'laminat' => $request->laminat,
             'term' => $request->term,
+            'design_description' => $request->design_description . '',
             'install_description' => $request->install,
             'preprint_description' => $request->preprint,
             'price' => $request->price,
@@ -134,13 +126,48 @@ class OrderController extends Controller
             'user_id' => Auth::user()->id,
         ]);
 
-        $photo = Photo::create([
-            'user_id' => Auth::user()->id,
-            'order_id' => $order->id,
-            'type' => 'main',
-            'path' => $pathfile,
-            'name' => $file_name
-        ]);
+        if ($request->file('main_files')){
+            foreach($request->file('main_files') as $key => $file)
+            {
+                $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
+
+                $file_path = $file->store('/public/files');
+
+                $path = $file->move($file_path, $fileName);
+
+                $pathfile =  '/' . $file_path . '/'. $fileName;
+
+                $photo = Photo::create([
+                    'user_id' => Auth::user()->id,
+                    'order_id' => $order->id,
+                    'type' => 'main',
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $pathfile
+                ]);
+            }
+        }
+
+        if ($request->file('design_files')){
+            foreach($request->file('design_files') as $key => $file)
+            {
+                $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
+
+                $file_path = $file->store('/public/files');
+
+                $path = $file->move($file_path, $fileName);
+
+                $pathfile =  '/' . $file_path . '/'. $fileName;
+
+                $photo = Photo::create([
+                    'user_id' => Auth::user()->id,
+                    'order_id' => $order->id,
+                    'type' => 'design_file',
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $pathfile
+                ]);
+            }
+        }
+        
 
         if($request->format == 1){
             $this->updateStatus($order->id, '1');
@@ -179,21 +206,26 @@ class OrderController extends Controller
         return redirect()->back()->with('message', 'Файлът е качен успешно!');
     }
     public function saveDesign(Request $request, $id){
-        $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
- 
-        $file_path = $request->file('file')->store('/public/files');
+        if ($request->file('designer_files')){
+            foreach($request->file('designer_files') as $key => $file)
+            {
+                $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-        $request->file('file')->move($file_path, $file_name);
+                $file_path = $file->store('/public/files');
 
-        $pathfile =  '/' . $file_path . '/'. $file_name;
+                $path = $file->move($file_path, $fileName);
 
-        $photo = Photo::create([
-            'user_id' => Auth::user()->id,
-            'order_id' => $id,
-            'type' => 'gallery',
-            'path' => $pathfile,
-            'name' => $file_name
-        ]);
+                $pathfile =  '/' . $file_path . '/'. $fileName;
+
+                $photo = Photo::create([
+                    'user_id' => Auth::user()->id,
+                    'order_id' => $id,
+                    'type' => 'gallery',
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $pathfile
+                ]);
+            }
+        }
 
         return redirect()->back()->with('message', 'Файлът е качен успешно!');
     }
@@ -218,24 +250,28 @@ class OrderController extends Controller
 
         $photo_main = Photo::all()->where('order_id', $id)->where('type', 'main');
 
-        return view('components.order-review', compact('order','photo_main','photo_gallery','photo_install','statuses'));
+        $photo_design = Photo::all()->where('order_id', $id)->where('type', 'design_file');
+
+        return view('components.order-review', compact('order','photo_main','photo_gallery','photo_design','photo_install','statuses'));
     }
 
     public function edit($id)
     {
-        $photo_gallery = Photo::all()->where('order_id', $id)->where('type', 'gallery');
-
-        $photo_install = Photo::all()->where('order_id', $id)->where('type', 'install');
-
-        $photo_main = Photo::all()->where('order_id', $id)->where('type', 'main');
-
         $order = Order::find($id);
 
         if($order->status_id > 2 && Auth::user()->role->slug != 'admin'){
             return redirect()->back()->with('warning', 'Нямаш достъп до тази страница!');
         }
 
-        return view('components.order-edit',compact('order','photo_main','photo_gallery','photo_install'));
+        $photo_gallery = Photo::all()->where('order_id', $id)->where('type', 'gallery');
+
+        $photo_install = Photo::all()->where('order_id', $id)->where('type', 'install');
+
+        $photo_main = Photo::all()->where('order_id', $id)->where('type', 'main');
+
+        $photo_design = Photo::all()->where('order_id', $id)->where('type', 'design_file');
+
+        return view('components.order-edit',compact('order','photo_main','photo_gallery','photo_design','photo_install'));
     }
     public function update(Request $request, $id)
     {
@@ -273,6 +309,8 @@ class OrderController extends Controller
 
         $order->design = $request->design;
 
+        $order->design_description = $request->design_description . '';
+
         $order->install_description = $request->install;
 
         $order->preprint_description = $request->preprint;
@@ -283,23 +321,48 @@ class OrderController extends Controller
 
         $order->save();
 
-        if($request->file('file')){
-            $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
- 
-            $file_path = $request->file('file')->store('/public/files');
-    
-            $request->file('file')->move($file_path, $file_name);
-    
-            $pathfile =  '/' . $file_path . '/'. $file_name;
-    
-            $photo = Photo::create([
-                'user_id' => Auth::user()->id,
-                'order_id' => $id,
-                'type' => 'main',
-                'path' => $pathfile,
-                'name' => $file_name
-            ]);
+        if ($request->file('main_files')){
+            foreach($request->file('main_files') as $key => $file)
+            {
+                $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
+
+                $file_path = $file->store('/public/files');
+
+                $path = $file->move($file_path, $fileName);
+
+                $pathfile =  '/' . $file_path . '/'. $fileName;
+
+                $photo = Photo::create([
+                    'user_id' => Auth::user()->id,
+                    'order_id' => $order->id,
+                    'type' => 'main',
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $pathfile
+                ]);
+            }
         }
+
+        if ($request->file('design_files')){
+            foreach($request->file('design_files') as $key => $file)
+            {
+                $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
+
+                $file_path = $file->store('/public/files');
+
+                $path = $file->move($file_path, $fileName);
+
+                $pathfile =  '/' . $file_path . '/'. $fileName;
+
+                $photo = Photo::create([
+                    'user_id' => Auth::user()->id,
+                    'order_id' => $order->id,
+                    'type' => 'design_file',
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $pathfile
+                ]);
+            }
+        }
+        
 
         if($request->format == 1){
             $this->updateStatus($order->id, '1');
@@ -337,7 +400,7 @@ class OrderController extends Controller
 
         $photo_name = $request->file('image')->getClientOriginalName() . date('d-m-Y-H-i');
  
-        $photo_path = $request->file('image')->store('/public/images');
+        $photo_path = $request->file('image')->store('/images');
 
         $request->file('image')->move($photo_path, $photo_name);
 
@@ -348,7 +411,7 @@ class OrderController extends Controller
             'order_id' => $id,
             'type' => 'gallery',
             'path' => $pathimage,
-            'name' => $photo_name,
+            'name' => $request->file('image')->getClientOriginalName(),
         ]);
 
         return redirect()->back()->with('message', 'Резултатът беше качен успешно!');
@@ -356,21 +419,26 @@ class OrderController extends Controller
 
     public function storeInstallImage(Request $request, $id){
 
-        $photo_name = $request->file('image')->getClientOriginalName() . date('d-m-Y-H-i');
- 
-        $photo_path = $request->file('image')->store('/public/images');
+        if ($request->file('install_files')){
+            foreach($request->file('install_files') as $key => $file)
+            {
+                $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-        $request->file('image')->move($photo_path, $photo_name);
+                $file_path = $file->store('/public/files');
 
-        $pathimage =  '/' . $photo_path . '/'. $photo_name;
+                $path = $file->move($file_path, $fileName);
 
-        $photo = Photo::create([
-            'user_id' => Auth::user()->id,
-            'order_id' => $id,
-            'type' => 'install',
-            'name' => $photo_name,
-            'path' => $pathimage,
-        ]);
+                $pathfile =  '/' . $file_path . '/'. $fileName;
+
+                $photo = Photo::create([
+                    'user_id' => Auth::user()->id,
+                    'order_id' => $id,
+                    'type' => 'install',
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $pathfile
+                ]);
+            }
+        }
 
         return redirect()->back()->with('message', 'Резултатът беше качен успешно!');
     }

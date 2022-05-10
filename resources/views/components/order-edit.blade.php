@@ -44,7 +44,7 @@
             <label for="formGroupExampleInput">Ламинат</label>
             <textarea id="laminat" name="laminat" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->laminat }}</textarea>
         </div>
-        </div>Файлове:<br>
+        <div>Файлове:<br>
         @foreach($photo_main as $file)
            <a href="{{$file->path}}" download>{{$file->name}}</a><br>
           @endforeach
@@ -52,10 +52,11 @@
          <br>
           @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office')
          
-            <input name="file" type="file" class="form-control" id="customFile" />
+          <input value="{{ old('main_files') }}" name="main_files[]" multiple type="file" class="form-control" id="customFile" />
 
             <br>
         @endif
+</div>
         <div class="form-group">
             <label for="formGroupExampleInput">Довършителни и дейности</label>
             <textarea id="term" value="{{ old('term') }}" name="term" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->term }}</textarea>
@@ -70,7 +71,7 @@
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Дизайн</label>
-            <select name="design" class="form-control form-control-lg">
+            <select name="design" id="designChoose" class="form-control form-control-lg">
             @if($order->design == 1) 
                 <option  selected value="1">Да</option>
                 <option value="2">Не</option>
@@ -81,6 +82,28 @@
                 
             </select>
         </div>
+
+        <div id="design_show">
+            <div>Файлове за дизайн:<br>
+            <h4>
+                @foreach($photo_design as $file)
+                    <a href="{{$file->path}}" download>{{$file->name}}</a><br>
+                @endforeach
+            </h4>
+            <br>
+            @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office')
+                 <input value="{{ old('design_files') }}" name="design_files[]" multiple type="file" class="form-control" id="customFile" />
+            <br>
+            @endif
+            </div>
+            <div class="form-group">
+            <label for="formGroupExampleInput">Бележка</label>
+            <textarea id="design_description" value="{{ old('design_description') }}" name="design_description" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->design_description }}</textarea>
+        </div>
+        </div>
+        
+        </div>
+        
         <div class="form-group">
             <label for="formGroupExampleInput">Предпечат</label>
             <textarea id="preprint" name="preprint" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->preprint_description }}</textarea>
@@ -88,7 +111,8 @@
         
         <div class="form-group">
             <label for="formGroupExampleInput">Имейл</label>
-            <p>{{ $order->email }}</p>
+            <p name="email">{{ $order->email }}</p>
+            <input name="email" type="hidden" value="{{ $order->email }}">
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Адрес</label>
@@ -96,12 +120,14 @@
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Телефон</label>
-            <p>{{ $order->phone }}</p>
+            <p name="phone">{{ $order->phone }}</p>
+            <input name="phone" type="hidden" value="{{ $order->phone }}">
         
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Име /  Фирма</label>
-            <p>{{ $order->name }}</p>
+            <p name="name">{{ $order->name }}</p>
+            <input name="name" type="hidden" value="{{ $order->name }}">
         </div>
         <input type="hidden"name="format" value="1">
         <div class="form-group">
@@ -122,6 +148,34 @@
         <br>
     </form>
     </div>
+
+    <script>  
+
+    
+$(document).ready(function(){
+
+    if ( $('#designChoose').value == '1')
+      {
+        $("#design_show").show();
+      }
+      else
+      {
+        $("#design_show").hide();
+      }
+    
+    
+    $('#designChoose').on('change', function() {
+      if ( this.value == '1')
+      {
+        $("#design_show").show();
+      }
+      else
+      {
+        $("#design_show").hide();
+      }
+    });
+});
+</script>
 
      <!-- Summernote CSS - CDN Link -->
      <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
@@ -149,6 +203,7 @@
                     $("#laminat").summernote();
                     $("#term").summernote();
                     $("#install").summernote();
+                    $("#design_description").summernote();
                     $('.dropdown-toggle').dropdown();
                 });
             </script>

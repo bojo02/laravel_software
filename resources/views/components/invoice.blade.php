@@ -24,7 +24,13 @@
                     </footer>
                 </blockquote>
             </div>
+            <form action="{{route('admin.destroy.invoice', ['id' => $invoice->id])}}" method="POST">
+            @method('POST')
+            @csrf
+            <button class="btn btn-danger btn-lg" role="button">Изтриване</button> 
+          </form>
         </div>
+       
         @endslot
     </x-layouts.base>
 </div>

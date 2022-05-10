@@ -9,67 +9,78 @@
     @csrf
         <div class="form-group">
             <label for="formGroupExampleInput">Обект</label>
-            <textarea id="object" value="{{ old('object') }}" name="object" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="object" value="{{ old('object') }}" name="object" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('object') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Продукт</label>
-            <textarea id="product" value="{{ old('product') }}" name="product" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="product" value="{{ old('product') }}" name="product" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('product') }}</textarea>
         </div>
        
         <div class="form-group">
             <label for="formGroupExampleInput">Визия</label>
-            <textarea id="vision" value="{{ old('vision') }}" name="vision" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="vision" value="{{ old('vision') }}" name="vision" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('vision') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Медия</label>
-            <textarea id="media" value="{{ old('media') }}" name="media" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="media" value="{{ old('media') }}" name="media" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('media') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Размери</label>
-            <textarea id="size" value="{{ old('size') }}" name="size" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="size" value="{{ old('size') }}" name="size" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('size') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Брой</label>
-            <textarea id="number" value="{{ old('number') }}" name="number" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="number" value="{{ old('number') }}" name="number" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('number') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Джобове</label>
-            <textarea id="pockets" value="{{ old('pockets') }}" name="pockets" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="pockets" value="{{ old('pockets') }}" name="pockets" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('pockets') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Капси</label>
-            <textarea id="eyelets" value="{{ old('eyelets') }}" name="eyelets" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="eyelets" value="{{ old('eyelets') }}" name="eyelets" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('eyelets') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Ламинат</label>
-            <textarea id="laminat" value="{{ old('laminat') }}" name="laminat" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="laminat" value="{{ old('laminat') }}" name="laminat" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('laminat') }}</textarea>
         </div>
         <div class="form-group">
-            <label class="form-label" for="customFile">Файл</label>
-            <input value="{{ old('file') }}" name="file" type="file" class="form-control" id="customFile" />
+            <label class="form-label" for="customFile">Файлове</label>
+            <input value="{{ old('main_files') }}" name="main_files[]" multiple type="file" class="form-control" id="customFile" />
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Довършителни и дейности</label>
-            <textarea id="term" value="{{ old('term') }}" name="term" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="term" value="{{ old('term') }}" name="term" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('term') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Описание за монтаж</label>
-            <textarea id="install" value="{{ old('install') }}" name="install" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="install" value="{{ old('install') }}" name="install" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('install') }}</textarea>
         </div>
         <div id="area" class="form-group">
             <label for="formGroupExampleInput">Площ</label>
-            <textarea id="area" value="{{ old('area') }}" name="area" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="area" value="{{ old('area') }}" name="area" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('area') }}</textarea>
         </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Дизайн</label>
-            <select name="design" class="form-control form-control-lg">
-                <option value="1">Да</option>
+            <select name="design" id="designChoose" class="form-control form-control-lg">
+                <option selected value="1">Да</option>
                 <option value="2">Не</option>
             </select>
         </div>
+        <div id="design_show">
+        <div class="form-group">
+            <label class="form-label" for="customFile">Файлове за дизайн</label>
+            <input value="{{ old('design_files') }}" name="design_files[]" multiple type="file" class="form-control" id="customFile" />
+
+            <div class="form-group">
+            <label for="formGroupExampleInput">Бележка</label>
+            <textarea id="design_description" value="{{ old('design_description') }}" name="design_description" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('design_description') }}</textarea>
+        </div>
+        </div>
+        </div>
         <div class="form-group">
             <label for="formGroupExampleInput">Предпечат</label>
-            <textarea id="preprint" value="{{ old('preprint') }}" name="preprint" type="text" class="form-control" id="formGroupExampleInput" placeholder=""></textarea>
+            <textarea id="preprint" value="{{ old('preprint') }}" name="preprint" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('preprint') }}</textarea>
         </div>
         
         <div class="form-group">
@@ -104,10 +115,32 @@
         </div>
 
         <button type="submit" class="btn btn-success">Създай</button>
+
+
+        
         <br>
         <br>
     </form>
     </div>
+    <script>  
+$(document).ready(function(){
+
+        $("#design_show").show();
+
+
+    $('#designChoose').on('change', function() {
+      if ( this.value == '1')
+      {
+        $("#design_show").show();
+      }
+      else
+      {
+        $("#design_show").hide();
+      }
+    });
+});
+</script>
+
 
      <!-- Summernote CSS - CDN Link -->
      <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.css" rel="stylesheet">
@@ -135,6 +168,7 @@
                     $("#laminat").summernote();
                     $("#term").summernote();
                     $("#install").summernote();
+                    $("#design_description").summernote();
                     $('.dropdown-toggle').dropdown();
                 });
             </script>
