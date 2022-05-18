@@ -92,8 +92,8 @@ class OrderController extends Controller
         'media'=>'required',
         'size'=>'required',
         'number'=>'required',
-        'laminat'=>'required',
         'term'=>'required',
+        'finish_date'=>'required',
         'install'=>'required',
         'name'=>'required',
         'format'=>'required',
@@ -115,6 +115,7 @@ class OrderController extends Controller
             'area' => $request->area,
             'laminat' => $request->laminat,
             'term' => $request->term,
+            'finish_date' => $request->finish_date,
             'design_description' => $request->design_description . '',
             'install_description' => $request->install,
             'preprint_description' => $request->preprint,
@@ -290,6 +291,8 @@ class OrderController extends Controller
         $order->product = $request->product;
 
         $order->vision = $request->vision;
+
+        $order->finish_date = $request->finish_date;
 
         $order->media = $request->media;
 

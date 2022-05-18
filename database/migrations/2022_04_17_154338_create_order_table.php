@@ -36,6 +36,7 @@ class CreateOrderTable extends Migration
             $table->string('preprint_description');
             $table->integer('delivery_id')->default(0);
             $table->integer('price');
+            $table->date('finish_date');
             $table->string('status_id')->default(1);
             $table->string('format_id');
             $table->integer('user_id');

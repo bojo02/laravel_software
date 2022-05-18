@@ -21,7 +21,7 @@
             <textarea id="vision" value="{{ old('vision') }}" name="vision" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('vision') }}</textarea>
         </div>
         <div class="form-group">
-            <label for="formGroupExampleInput">Медия</label>
+            <label for="formGroupExampleInput">Материал</label>
             <textarea id="media" value="{{ old('media') }}" name="media" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('media') }}</textarea>
         </div>
         <div class="form-group">
@@ -63,10 +63,28 @@
         <div class="form-group">
             <label for="formGroupExampleInput">Дизайн</label>
             <select name="design" id="designChoose" class="form-control form-control-lg">
+            @if (old('design') == 1)
                 <option selected value="1">Да</option>
                 <option value="2">Не</option>
+            @else
+                <option value="1">Да</option>
+                <option selected value="2">Не</option>
+            @endif
             </select>
         </div>
+        @if(old('design') == 2)
+        <div id="design_show" style="display: none;">
+        <div class="form-group">
+            <label class="form-label" for="customFile">Файлове за дизайн</label>
+            <input value="{{ old('design_files') }}" name="design_files[]" multiple type="file" class="form-control" id="customFile" />
+
+            <div class="form-group">
+            <label for="formGroupExampleInput">Бележка</label>
+            <textarea id="design_description" value="{{ old('design_description') }}" name="design_description" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('design_description') }}</textarea>
+            </div>
+        </div>
+        </div>
+        @else
         <div id="design_show">
         <div class="form-group">
             <label class="form-label" for="customFile">Файлове за дизайн</label>
@@ -75,9 +93,10 @@
             <div class="form-group">
             <label for="formGroupExampleInput">Бележка</label>
             <textarea id="design_description" value="{{ old('design_description') }}" name="design_description" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('design_description') }}</textarea>
+            </div>
         </div>
         </div>
-        </div>
+        @endif
         <div class="form-group">
             <label for="formGroupExampleInput">Предпечат</label>
             <textarea id="preprint" value="{{ old('preprint') }}" name="preprint" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('preprint') }}</textarea>
@@ -105,14 +124,26 @@
             <label for="formGroupExampleInput">Сума</label>
             <input value="{{ old('price') }}" name="price" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
         </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput">Краен срок</label>
+            <input value="{{ old('finish_date') }}" name="finish_date" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+        </div>
 
         <div class="form-group">
             <label for="formGroupExampleInput">Изпрати към</label>
             <select name="format" class="form-control form-control-lg">
-                <option value="2">Печатар</option>
+            @if (old('format') == 2)
+                <option selected value="2">Печатар</option>
                 <option value="1">Дизайнер</option>
+            @else
+                <option value="2">Печатар</option>
+                <option selected value="1">Дизайнер</option>
+            @endif
+          
             </select>
         </div>
+
+        
 
         <button type="submit" class="btn btn-success">Създай</button>
 
@@ -123,10 +154,9 @@
     </form>
     </div>
     <script>  
+
+    
 $(document).ready(function(){
-
-        $("#design_show").show();
-
 
     $('#designChoose').on('change', function() {
       if ( this.value == '1')

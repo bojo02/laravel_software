@@ -71,6 +71,7 @@
   <a class="" href="{{route('order.create')}}">Създаване на поръчка</a>
   @endif
   @if(Auth::user()->role->slug == 'admin')
+  <a class="" href="{{route('order.create')}}">Създаване на поръчка</a>
   <a class="" href="{{route('admin.orders')}}">Поръчки</a>
   <a class="" href="{{route('admin.users')}}">Потребители</a>
   <a class="" href="{{route('admin.new.user')}}">Нов потребител</a>

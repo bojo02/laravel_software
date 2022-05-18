@@ -21,7 +21,7 @@
             <textarea id="vision" name="vision" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->vision }}</textarea>
         </div>
         <div class="form-group">
-            <label for="formGroupExampleInput">Медия</label>
+            <label for="formGroupExampleInput">Материал</label>
             <textarea id="media" name="media" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->media }}</textarea>
         </div>
         <div class="form-group">
@@ -50,7 +50,7 @@
           @endforeach
           </h4>
          <br>
-          @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office')
+          @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office' || Auth::user()->role->slug == 'admin')
          
           <input value="{{ old('main_files') }}" name="main_files[]" multiple type="file" class="form-control" id="customFile" />
 
@@ -91,7 +91,7 @@
                 @endforeach
             </h4>
             <br>
-            @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office')
+            @if(Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'office' || Auth::user()->role->slug == 'admin')
                  <input value="{{ old('design_files') }}" name="design_files[]" multiple type="file" class="form-control" id="customFile" />
             <br>
             @endif
@@ -134,6 +134,12 @@
             <label for="formGroupExampleInput">Сума</label>
             <input name="price" type="text" value="{{ $order->price }}" class="form-control" id="formGroupExampleInput" placeholder="">
         </div>
+
+        <div class="form-group">
+            <label for="formGroupExampleInput">Краен срок</label>
+            <input value="{{ $order->finish_date }}" name="finish_date" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+        </div>
+
 
         <div class="form-group">
             <label for="formGroupExampleInput">Изпрати към</label>

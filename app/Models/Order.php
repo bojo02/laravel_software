@@ -13,7 +13,7 @@ class Order extends Model
 
     protected $fillable = ['name','design','address','object','product','vision','media','size','number','pockets','eyelets',
     'area','laminat','term','install_description','preprint_description' , 'role_id','user_id', 'price',
-     'title', 'description', 'name', 'format_id', 'phone', 'photo', 'email', 'design_description'];
+     'title', 'description', 'name', 'format_id', 'phone', 'photo', 'email', 'design_description', 'finish_date'];
 
     public function viewstatus(){
         return $this->belongsTo(Statuses::class, 'status_id');

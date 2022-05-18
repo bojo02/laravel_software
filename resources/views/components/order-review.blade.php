@@ -73,7 +73,7 @@
 
         <div class="jumbotron">
 
-        @if(($order->viewstatus->id == 1 || $order->viewstatus->id == 2) && (Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office'))
+        @if((($order->viewstatus->id == 1 || $order->viewstatus->id == 2) && (Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office')) || Auth::user()->role->slug == 'admin')
         <form method="GET" action="{{route('order.edit', ['order' => $order->id])}}">
           <td><button type="submit" class="btn btn-primary">Редактиране</button></td>
       </form>
@@ -105,7 +105,7 @@
           <hr class="my-4">
           <h4>Визия: {!!$order->vision!!}</h4>
           <hr class="my-4">
-          <h4>Медия: {!!$order->media!!}</h4>
+          <h4>Материал: {!!$order->media!!}</h4>
           <hr class="my-4">
           <h4>Размери: {!!$order->size!!}</h4>
           <hr class="my-4">
@@ -280,16 +280,16 @@
                 });
             </script>
 
-
-       
           <hr class="my-4">
-          <h3>Създадено от: {{$order->user->name}} - {{$order->created_at }}</h3>
+          <h3 style="color:green;">Краен срок: {{$order->finish_date}}</h3>
+          <hr class="my-4">
+          <h3 style="color:red;" >Създадено от: {{$order->user->name}} на дата: {{$order->created_at }}</h3>
           <hr class="my-4">
           @if($order->status_id == 10)
                 @if($order->delivery_id == 1)
                   <h3>Извършен монтаж</h3>
                   @else
-                  <h3>Предадено на клиент/h3>
+                  <h3>Предадено на клиент</h3>
                 @endif 
                 <hr class="my-4">
           @endif
