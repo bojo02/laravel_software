@@ -7,7 +7,7 @@ namespace App\Http\Controllers;
   
 
 use Illuminate\Http\Request;
-
+use App\Models\Order;
   
 
 class SignaturePadController extends Controller
@@ -24,11 +24,10 @@ class SignaturePadController extends Controller
 
      */
 
-    public function index()
-
+    public function index($id)
     {
 
-        return view('components.signature');
+        return view('components.signature',compact('id'));
 
     }
 
@@ -44,11 +43,15 @@ class SignaturePadController extends Controller
 
      */
 
-    public function upload(Request $request)
+    public function uploadSignature(Request $request)
 
     {
 
-        $folderPath = public_path('upload/');
+        $order = Order::find($request->id);
+
+
+
+        $folderPath = public_path('upload/signatures/');
 
         
 
@@ -66,14 +69,19 @@ class SignaturePadController extends Controller
 
         $image_base64 = base64_decode($image_parts[1]);
 
-           
+           $name = uniqid() . '.'.$image_type;
 
-        $file = $folderPath . uniqid() . '.'.$image_type;
+        $file = $folderPath . $name;
 
         file_put_contents($file, $image_base64);
 
-        return back()->with('success', 'success Full upload signature');
+        $order->signature = '/upload/signatures/' . $name;
+
+        $order->save();
+
+        return redirect(route('order.show', ['order' => $request->id]))->with('message', 'Подписът е запаметен успешно!');
 
     }
+
 
 }

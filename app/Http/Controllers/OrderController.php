@@ -16,6 +16,8 @@ use App\Http\Middleware\designer;
 class OrderController extends Controller
 {
     public $paginate = 10;
+
+    public $savingFile = '/';
     /**
      * Display a listing of the resource.
      *
@@ -33,7 +35,7 @@ class OrderController extends Controller
     public function index()
     {
         if(Auth::user()->role->slug == 'designer'){
-            $orders = Order::select('*')->where('status_id', '=', 1)->orWhere('status_id', '=', 4)->latest()->where('format_id', '=', 1)->simplePaginate(10);
+            $orders = Order::select('*')->where('status_id', '=', 1)->orWhere('status_id', '=', 4)->latest()->simplePaginate(10);
 
             return view('components.orders', compact('orders'));
         }
@@ -55,7 +57,7 @@ class OrderController extends Controller
         }
         else if(Auth::user()->role->slug == 'lastprint'){
 
-            $orders = Order::select('*')->where('status_id', '=', 6)->where('format_id', '=', 2)->latest()->simplePaginate(10);
+            $orders = Order::select('*')->where('status_id', '=', 6)->latest()->simplePaginate(10);
 
             return view('components.orders', compact('orders'));
 
@@ -93,7 +95,6 @@ class OrderController extends Controller
         'size'=>'required',
         'number'=>'required',
         'term'=>'required',
-        'finish_date'=>'required',
         'install'=>'required',
         'name'=>'required',
         'format'=>'required',
@@ -102,24 +103,26 @@ class OrderController extends Controller
 
         $order = Order::create([
             'role_id' => Auth::user()->role_id,
-            'address' => $request->address,
-            'object' => $request->object,
-            'product' => $request->product,
-            'vision' => $request->vision,
-            'media' => $request->media,
-            'design' => $request->design,
-            'size' => $request->size,
-            'number' => $request->number,
-            'pockets' => $request->pockets,
-            'eyelets' => $request->eyelets,
-            'area' => $request->area,
-            'laminat' => $request->laminat,
-            'term' => $request->term,
-            'finish_date' => $request->finish_date,
+            'address' => $request->address.'',
+            'object' => $request->object.'',
+            'product' => $request->product.'',
+            'vision' => $request->vision.'',
+            'media' => $request->media.'',
+            'design' => $request->design.'',
+            'size' => $request->size.'',
+            'number' => $request->number.'',
+            'pockets' => $request->pockets.'',
+            'eyelets' => $request->eyelets.'',
+            'area' => $request->area.'',
+            'laminat' => $request->laminat.'',
+            'term' => $request->term.'',
+            'finish_date_design' => $request->finish_date_design.'',
+            'finish_date_print' => $request->finish_date_print. '',
+            'finish_date_install' => $request->finish_date_install. '',
             'design_description' => $request->design_description . '',
-            'install_description' => $request->install,
-            'preprint_description' => $request->preprint,
-            'price' => $request->price,
+            'install_description' => $request->install.'',
+            'preprint_description' => $request->preprint.'',
+            'price' => round($request->price,2),
             'name' => $request->name,
             'format_id' => $request->format,
             'phone' => $request->phone,
@@ -132,11 +135,11 @@ class OrderController extends Controller
             {
                 $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-                $file_path = $file->store('/public/files');
+                $file_path = $file->store(('upload/files/'));
 
                 $path = $file->move($file_path, $fileName);
 
-                $pathfile =  '/' . $file_path . '/'. $fileName;
+                $pathfile =  $this->savingFile . $file_path . '/'. $fileName;
 
                 $photo = Photo::create([
                     'user_id' => Auth::user()->id,
@@ -153,11 +156,11 @@ class OrderController extends Controller
             {
                 $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-                $file_path = $file->store('/public/files');
+                $file_path = $file->store(('upload/files/'));
 
                 $path = $file->move($file_path, $fileName);
 
-                $pathfile =  '/' . $file_path . '/'. $fileName;
+                $pathfile =  $this->savingFile . $file_path . '/'. $fileName;
 
                 $photo = Photo::create([
                     'user_id' => Auth::user()->id,
@@ -180,6 +183,7 @@ class OrderController extends Controller
     
     }
 
+    
     public function sendToPrinter($id){
         $order = Order::find($id);
 
@@ -190,11 +194,11 @@ class OrderController extends Controller
     public function saveFile(Request $request, $id){
         $file_name = $request->file('file')->getClientOriginalName() . date('d-m-Y-H-i');
  
-        $file_path = $request->file('file')->store('/public/files');
+        $file_path = $request->file('file')->store(('upload/files/'));
 
         $request->file('file')->move($file_path, $file_name);
 
-        $pathfile =  '/' . $file_path . '/'. $file_name;
+        $pathfile =  $this->savingFile . $file_path . '/'. $file_name;
 
         $photo = Photo::create([
             'user_id' => Auth::user()->id,
@@ -206,17 +210,43 @@ class OrderController extends Controller
 
         return redirect()->back()->with('message', 'Файлът е качен успешно!');
     }
+
+    public function storePrintFile(Request $request, $id){
+        if ($request->file('print_files')){
+            foreach($request->file('print_files') as $key => $file)
+            {
+                $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
+
+                $file_path = $file->store(('upload/files/'));
+
+                $path = $file->move($file_path, $fileName);
+
+                $pathfile =  $this->savingFile . $file_path . '/'. $fileName;
+
+                $photo = Photo::create([
+                    'user_id' => Auth::user()->id,
+                    'order_id' => $id,
+                    'type' => 'print_files',
+                    'name' => $file->getClientOriginalName(),
+                    'path' => $pathfile
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('message', 'Файлът е качен успешно!');
+    }
+
     public function saveDesign(Request $request, $id){
         if ($request->file('designer_files')){
             foreach($request->file('designer_files') as $key => $file)
             {
                 $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-                $file_path = $file->store('/public/files');
+                $file_path = $file->store(('upload/files/'));
 
                 $path = $file->move($file_path, $fileName);
 
-                $pathfile =  '/' . $file_path . '/'. $fileName;
+                $pathfile =  $this->savingFile . $file_path . '/'. $fileName;
 
                 $photo = Photo::create([
                     'user_id' => Auth::user()->id,
@@ -241,6 +271,10 @@ class OrderController extends Controller
 
     public function show($id)
     {
+        $website = 'localhost:8000';
+
+        $invoice = Invoice::where('order_id', $id)->first();
+
         $order = Order::find($id);
 
         $statuses = Statuses::all();
@@ -253,7 +287,9 @@ class OrderController extends Controller
 
         $photo_design = Photo::all()->where('order_id', $id)->where('type', 'design_file');
 
-        return view('components.order-review', compact('order','photo_main','photo_gallery','photo_design','photo_install','statuses'));
+        $print_files = Photo::all()->where('order_id', $id)->where('type', 'print_files');
+
+        return view('components.order-review', compact('order','photo_main','photo_gallery','photo_design','photo_install','invoice','statuses','print_files','website'));
     }
 
     public function edit($id)
@@ -286,29 +322,27 @@ class OrderController extends Controller
 
         $order->phone = $request->phone;
 
-        $order->object = $request->object;
+        $order->object = $request->object.'';
 
-        $order->product = $request->product;
+        $order->product = $request->product.'';
 
-        $order->vision = $request->vision;
+        $order->vision = $request->vision.'';
 
-        $order->finish_date = $request->finish_date;
+        $order->media = $request->media.'';
 
-        $order->media = $request->media;
+        $order->size = $request->size.'';
 
-        $order->size = $request->size;
+        $order->number = $request->number.'';
 
-        $order->number = $request->number;
+        $order->pockets = $request->pockets.'';
 
-        $order->pockets = $request->pockets;
+        $order->eyelets = $request->eyelets.'';
 
-        $order->eyelets = $request->eyelets;
+        $order->area = $request->area.'';
 
-        $order->area = $request->area;
+        $order->laminat = $request->laminat.'';
 
-        $order->laminat = $request->laminat;
-
-        $order->term = $request->term;
+        $order->term = $request->term.'';
 
         $order->design = $request->design;
 
@@ -318,7 +352,11 @@ class OrderController extends Controller
 
         $order->preprint_description = $request->preprint;
 
-        $order->price = $request->price;
+        $order->price = number_format($request->price, 2);
+
+        $order->finish_date_print =$request->finish_date_print. '';
+        $order->finish_date_install = $request->finish_date_install. '';
+        $order->design_description = $request->design_description . '';
 
         $order->format_id = $request->format;
 
@@ -329,11 +367,11 @@ class OrderController extends Controller
             {
                 $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-                $file_path = $file->store('/public/files');
+                $file_path = $file->store(('upload/files/'));
 
                 $path = $file->move($file_path, $fileName);
 
-                $pathfile =  '/' . $file_path . '/'. $fileName;
+                $pathfile =  $this->savingFile . $file_path . '/'. $fileName;
 
                 $photo = Photo::create([
                     'user_id' => Auth::user()->id,
@@ -350,11 +388,11 @@ class OrderController extends Controller
             {
                 $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-                $file_path = $file->store('/public/files');
+                $file_path = $file->store(('upload/files/'));
 
                 $path = $file->move($file_path, $fileName);
 
-                $pathfile =  '/' . $file_path . '/'. $fileName;
+                $pathfile =  $this->savingFile . $file_path . '/'. $fileName;
 
                 $photo = Photo::create([
                     'user_id' => Auth::user()->id,
@@ -403,11 +441,11 @@ class OrderController extends Controller
 
         $photo_name = $request->file('image')->getClientOriginalName() . date('d-m-Y-H-i');
  
-        $photo_path = $request->file('image')->store('/images');
+        $photo_path = $request->file('image')->store(('upload/images/'));
 
         $request->file('image')->move($photo_path, $photo_name);
 
-        $pathimage =  '/' . $photo_path . '/'. $photo_name;
+        $pathimage =  $this->savingFile . $photo_path . '/'. $photo_name;
 
         $photo = Photo::create([
             'user_id' => Auth::user()->id,
@@ -427,11 +465,11 @@ class OrderController extends Controller
             {
                 $fileName = $file->getClientOriginalName() . date('d-m-Y-H-i'); 
 
-                $file_path = $file->store('/public/files');
+                $file_path = $file->store(('upload/files/'));
 
                 $path = $file->move($file_path, $fileName);
 
-                $pathfile =  '/' . $file_path . '/'. $fileName;
+                $pathfile =  $this->savingFile . $file_path . '/'. $fileName;
 
                 $photo = Photo::create([
                     'user_id' => Auth::user()->id,
@@ -554,7 +592,7 @@ class OrderController extends Controller
             $orders = Order::select('*')->where('status_id', '=', '9')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
         }
         else if($request->order_status == 3){
-            $orders = Order::select('*')->where('in_stock', '=', '1')->where('status_id', '!=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
+            $orders = Order::select('*')->where('in_stock', '=', '1')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);
         }
         else if($request->order_status == 4){
             $orders = Order::select('*')->where('status_id', '=', '10')->where('role_id', '=', Auth::user()->role_id)->latest()->where('product', 'LIKE', "%{$request->search}%")->simplePaginate(10);

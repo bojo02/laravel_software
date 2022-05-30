@@ -101,6 +101,8 @@
         @endif
         </p>
         <hr class="my-4">
+        <span style="color:white;" class="badge bg-danger">Номер на поръчка: {{$order->id}}</span>
+        <hr class="my-4">
           <h4>Обект: {!! $order->object!!}</h4>
           <hr class="my-4">
           <h4>Визия: {!!$order->vision!!}</h4>
@@ -127,6 +129,8 @@
           <h4>Довършителни и дейности: {!!$order->term!!}</h4>
           <hr class="my-4">
           <h4>Монтаж: {!!$order->install_description!!}</h4>
+          <hr class="my-4">
+          <h4>Площ: {!!$order->area!!}</h4>
           <hr class="my-4">
           <h4>Дизайн: @if($order->design == 1) 
           Да  
@@ -183,6 +187,25 @@
         </form>
         @endif
         <hr class="my-4">
+        <!-- ВСИЧКИ файлове ОТ ДИЗАЙНЕР -->
+          <h4>Файлове за печат:</h4>
+          @foreach($print_files as $file)
+           <a href="{{$file->path}}" download>{{$file->name}}</a><br>
+          @endforeach
+         <!-- ДИЗАЙНЕР КАЧВАНЕ НА файл -->
+        
+          </h4>
+          @if(Auth::user()->role->slug == 'designer')
+          <form method="POST" action="{{route('order.store.print.file', ['id' => $order->id])}}" enctype="multipart/form-data">
+            @method('POST')
+            @csrf
+            <label class="form-label" for="customFile">Качване на файл</label>
+            <input name="print_files[]" type="file" multiple class="form-control" id="customFile" />
+            <br>
+            <button type="submit" class="btn btn-success">Качи</button>
+        </form>
+        @endif
+        <hr class="my-4">
         <!-- ВСИЧКИ МОНТАЖНИ СНИМКИ -->
         <h4>Монтажен резултат:</h4>
           @forelse($photo_install as $image)
@@ -207,7 +230,7 @@
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#a{{$image->id}}">
           Голям екран
         </button>
-        <a href="{{$image->path}}" download="{{$image->path}}">Изгегли</a>
+        <a href="{{$image->path}}" download="{{$image->path}}">Изтегли</a>
         <br>
         <br>
         @empty
@@ -281,9 +304,13 @@
             </script>
 
           <hr class="my-4">
-          <h3 style="color:green;">Краен срок: {{$order->finish_date}}</h3>
+          <h3 style="color:green;">Краен срок за дизайн: {{$order->finish_date_design}}</h3>
           <hr class="my-4">
-          <h3 style="color:red;" >Създадено от: {{$order->user->name}} на дата: {{$order->created_at }}</h3>
+          <h3 style="color:blue;">Краен срок за печат: {{$order->finish_date_print}}</h3>
+          <hr class="my-4">
+          <h3 style="color:#B3A500;">Краен срок за монтаж: {{$order->finish_date_install}}</h3>
+          <hr class="my-4">
+          <h3 style="color:black;" >Създадено от: {{$order->user->name}} на дата: {{$order->created_at }}</h3>
           <hr class="my-4">
           @if($order->status_id == 10)
                 @if($order->delivery_id == 1)
@@ -335,12 +362,12 @@
           <form action="{{route('order.lastDesign', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
-              <button class="btn btn-info btn-lg" role="button">Изпрати към довършителни дигитални</button>
+              <button class="btn btn-info btn-lg" role="button">Изпрати към дигитален печат</button>
           </form>
-          <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
+          <form action="{{route('order.sendToPrinter', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
-              <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
+              <button class="btn btn-success btn-lg" role="button">Изпрати към широкоформатен печат</button>
           </form>
           @endif
           <!-- ДОВЪРШИТЕЛНИ ДИГИТАЛНИ -->
@@ -359,29 +386,55 @@
               <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
           </form>
           @endif
+            <!-- ОПЦИЯ ДА ВЪРНЕ НАЗАД МЕНИДЖЪРА ПРИ ОБЪРКВАНЕ С МОНТАЖНА ГРУПА -->
+            @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office' ||  Auth::user()->role->slug == 'admin') && $order->status_id == 8)
+          <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
+              @method('get')
+              @csrf
+              <button class="btn btn-danger btn-lg" role="button">Върни за корекции</button>
+          </form>
+          @endif
+          <!-- ПОКАЖИ ПОДПИС АКО ИМА-->
+          @if($order->signature != '')
+            <img src="{{$order->signature}}" alt="signature" width="466" height="198">
+
+            <script>
+              function printImg(url) {
+                var win = window.open('');
+                win.document.write('<img src="' + url + '" onload="window.print();window.close()" />');
+                win.focus();
+              }
+
+            </script>
+
+            <button onclick="printImg('http://{{$website . $order->signature}}')">Разпечатване</button>
+          @endif
+
           <!-- МОНТАЖНА ГРУПА -->
+          
           @if(Auth::user()->role->slug == 'installation_team' && $order->status_id == 8)
+          <form action="{{route('signature', ['id' => $order->id])}}" method="get">
+              @method('get')
+              @csrf
+              <button class="btn btn-primary btn-lg" role="button">Подпис</button>
+          </form>
           <form action="{{route('order.installReview', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
               <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
           </form>
           @endif
-          <!-- ПЕЧАТАР ИЗПРАЩА КЪМ ШИРОКОФОРМАТНИ / СКЛАД-->
+          <!-- ПЕЧАТАР ИЗПРАЩА КЪМ ШИРОКОФОРМАТНИ -->
           @if(Auth::user()->role->slug == 'printer' && $order->status_id == 2)
           <form action="{{route('order.lastPrint', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
               <button class="btn btn-info btn-lg" role="button">Изпрати към довършителни Широкоформатни</button>
           </form>
-          <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
-              @method('get')
-              @csrf
-              <button class="btn btn-success btn-lg" role="button">Изпрати към склад</button>
-          </form>
+          
           @endif
           <!-- МЕНИДЖЪРА ИЗПРАЩА ЗА НОВ ДИЗАЙН ИЛИ ГО ОДОБРЯВА -->
-          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && $order->status_id == 3)
+          @if(((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office' ||  Auth::user()->role->slug == 'admin') && $order->status_id == 3) )
           <form action="{{route('order.sendNewReview', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
@@ -395,16 +448,9 @@
                 <p style="display:none;">{{$body = 'Здравейте ' . $order->name . '.%0AТова е автоматичен имейл за одобрение на дизайн.'}}</p>
           <a class="btn btn-primary" href="mailto:{{$order->email}}?subject=Одобрение на дизайн&body={{$body}}" role="button">Изпрати имейл</a>
           @endif
-          <!-- ОПЦИЯ ДА ВЪРНЕ НАЗАД МЕНИДЖЪРА ПРИ ОБЪРКВАНЕ С МОНТАЖНА ГРУПА -->
-          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && $order->status_id == 9)
-          <form action="{{route('order.sendToStorage', ['id' => $order->id])}}" method="get">
-              @method('get')
-              @csrf
-              <button class="btn btn-danger btn-lg" role="button">Върни назад</button>
-          </form>
-          @endif
+         
           <!-- ФАКТУРИРАНЕ ОТ МЕНИДЖЪРИ -->
-          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && ($order->status_id == 9 ||$order->status_id == 10))
+          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office' ||  Auth::user()->role->slug == 'admin') && ($order->status_id == 9 ))
           <form action="{{route('order.done', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
@@ -428,7 +474,7 @@
           </form>
           @endif
           <!-- МЕНИДЖЪР ИЗБИРА ДАЛИ ДА ПРЕДАДЕ НА КЛИЕНТ ИЛИ МОНТАЖНА ГРУПА -->
-          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office') && $order->status_id == 7 )
+          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office' ||  Auth::user()->role->slug == 'admin') && $order->status_id == 7 )
           <form action="{{route('order.sendToClient', ['id' => $order->id])}}" method="get">
               @method('get')
               @csrf
@@ -440,8 +486,21 @@
               <button class="btn btn-info btn-lg" role="button">Предай за монтаж</button>
           </form>
           @endif
+         
+          @if((Auth::user()->role->slug == 'account' || Auth::user()->role->slug == 'sales' || Auth::user()->role->slug == 'office' ||  Auth::user()->role->slug == 'admin') && $order->status_id == 10 )
+          <br>
+          <br>
+        <form method="GET" action="{{route('admin.show.invoice', ['id' => $invoice->id])}}">
+              @method('get')
+              @csrf
+              <button class="btn btn-success btn-lg" role="button">Преглед на фактура</button>
+          </form>
+        @endif
           </p>
         </div>
+       
+
+       
 
         <script>
           function yesnoCheck(that) {

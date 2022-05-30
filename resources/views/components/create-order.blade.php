@@ -56,7 +56,7 @@
             <label for="formGroupExampleInput">Описание за монтаж</label>
             <textarea id="install" value="{{ old('install') }}" name="install" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('install') }}</textarea>
         </div>
-        <div id="area" class="form-group">
+        <div class="form-group">
             <label for="formGroupExampleInput">Площ</label>
             <textarea id="area" value="{{ old('area') }}" name="area" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ old('area') }}</textarea>
         </div>
@@ -122,11 +122,19 @@
         <input type="hidden"name="format" value="1">
         <div class="form-group">
             <label for="formGroupExampleInput">Сума</label>
-            <input value="{{ old('price') }}" name="price" type="text" class="form-control" id="formGroupExampleInput" placeholder="">
+            <input value="{{ old('price') }}" name="price" type="number" step="0.01" class="form-control" id="formGroupExampleInput" placeholder="">
         </div>
         <div class="form-group">
-            <label for="formGroupExampleInput">Краен срок</label>
-            <input value="{{ old('finish_date') }}" name="finish_date" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+            <label for="formGroupExampleInput">Краен срок за дизайн</label>
+            <input value="{{ old('finish_date_design') }}" name="finish_date_design" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput">Краен срок за печат</label>
+            <input value="{{ old('finish_date_print') }}" name="finish_date_print" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput">Краен срок за монтаж</label>
+            <input value="{{ old('finish_date_install') }}" name="finish_date_install" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
         </div>
 
         <div class="form-group">
@@ -157,6 +165,15 @@
 
     
 $(document).ready(function(){
+
+    if ( $('#designChoose').val() == '1')
+      {
+        $("#design_show").show();
+      }
+      else
+      {
+        $("#design_show").hide();
+      }
 
     $('#designChoose').on('change', function() {
       if ( this.value == '1')

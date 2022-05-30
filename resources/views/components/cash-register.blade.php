@@ -4,9 +4,20 @@
 
         @slot('content')
         <p style="display:none;">{{$fullsum = 0}}</p>
+
+        <p style="display:none;">{{$allsums = 0}}</p>
+
+        <p style="display:none;">{{$fullsumwithout = 0}}</p>
+       
         @foreach($invoices as $invoice)
-            <p style="display:none;">{{$fullsum += $invoice->price}}</p>
+            @if($invoice->payment_id != 3)
+                <p style="display:none;">{{$fullsum += $invoice->price}}</p>
+                @else
+                <p style="display:none;">{{$fullsumwithout += $invoice->price}}</p>
+            @endif
+            <p style="display:none;">{{$allsums += $invoice->price}}</p>
         @endforeach
+        
         <p style="display:none;">{{$fullexpense = 0}}</p>
         @foreach($expenses as $expense)
             <p style="display:none;">{{$fullexpense += $expense->price}}</p>
@@ -40,17 +51,23 @@
         <table class="table">
             <thead class="thead-dark">
                 <tr>
-                    <th scope="col">Общ оборот</th>
-                    <th scope="col">Общ разход</th>
-                    <th scope="col">Каса</th>
+                <th scope="col">Всички</th>
+                    <th scope="col">Общ оборот без ДДС</th>
+                    <th scope="col">Общ оборот с ДДС</th>
+                    <th scope="col">Разход</th>
+                    <th scope="col">Каса с разход</th>
+                    <th scope="col">Каса без разход</th>
                     <th scope="col">Всички фактури</th>
                     <th scope="col">Всички разходи</th>
                 </tr>
             </thead>
             <tbody>
-                <th scope="col"><h3>{{$fullsum}}</h3></th>
-                <th scope="col"><h3>{{$fullexpense}}</h3></th>
-                <th scope="col"><h3>{{$fullsum - $fullexpense}}</h3></th>
+            <th scope="col"><h3>{{$allsums}}лв.</h3></th>
+                <th scope="col"><h3>{{$fullsum}}лв.</h3></th>
+                <th scope="col"><h3>{{round($fullsum * 1.2,2)}}лв.</h3></th>
+                <th scope="col"><h3>{{$fullexpense}}лв.</h3></th>
+                <th scope="col"><h3>{{$fullsumwithout - $fullexpense}}лв.</h3></th>
+                <th scope="col"><h3>{{$fullsumwithout}}лв.</h3></th>
                 <form method="GET" action="{{route('admin.invoices.dates')}}">
                     <input name="start_date" type="hidden" value="{{$startDate ?? ''}}">
                     <input name="end_date" type="hidden" value="{{$endDate ?? ''}}">

@@ -18,7 +18,7 @@ class AdminController extends Controller
 {
     public function __construct()
     {
-            $this->middleware('admin');
+            $this->middleware('admin', ['except' => [ 'invoiceShow']]);
     }
     /**
      * Display a listing of the resource.

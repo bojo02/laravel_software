@@ -52,8 +52,8 @@
                 <tr>
                     <th scope="row">{{$invoice->id}}</th>
                     <td>{{$invoice->number}}</td>
-                    <td>{{$invoice->price}}</td>
-                    <td>{{$invoice->order->title}}</td>
+                    <td>{{$invoice->price}}лв.</td>
+                    <td>{!!$invoice->order->product!!}</td>
                     <td>{{$invoice->payment->name}}</td>
                     <td>{{$invoice->user->name}}</td>
                     <form method="GET" action="{{route('admin.show.invoice', ['id' => $invoice->id])}}">

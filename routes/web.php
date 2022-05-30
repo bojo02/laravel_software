@@ -28,6 +28,10 @@ use App\Http\Middleware\AdminAccess;
 
 require __DIR__.'/auth.php';
 
+Route::post('register', function(){
+    return 0;
+});
+
 //IF THE USER IS LOGGED
 
 Route::middleware(['web', 'auth'])->group(function () {
@@ -44,8 +48,9 @@ Route::middleware(['web', 'auth'])->group(function () {
     //ORDER CONTROLS
     Route::post('order/upload-install-photo{id}', [OrderController::class, 'storeInstallImage'])->name('order.store.install.photo');
     Route::post('order/upload-confirmation-photo{id}', [OrderController::class, 'storeResultImage'])->name('order.storeResultImage');
-    Route::post('order/storefile/{id}', [OrderController::class, 'saveFile'])->name('order.store.file');
+    Route::post('order/upload-confirmation-photo{id}', [OrderController::class, 'storeResultImage'])->name('order.storeResultImage');
     Route::post('order/storedesign/{id}', [OrderController::class, 'saveDesign'])->name('order.store.design');
+    Route::post('order/store/print/file/{id}', [OrderController::class, 'storePrintFile'])->name('order.store.print.file');
     Route::get('order/review/{id}', [OrderController::class, 'review'])->name('order.review');
     Route::get('order/sendNewReview/{id}', [OrderController::class, 'sendNewReview'])->name('order.sendNewReview');
     Route::get('order/designConfirm/{id}', [OrderController::class, 'designConfirm'])->name('order.designConfirm');
@@ -83,7 +88,10 @@ Route::middleware(['web', 'auth'])->group(function () {
 
       
 
-Route::get('signaturepad', [SignaturePadController::class, 'index']);
+Route::get('signaturepad/{id}', [SignaturePadController::class, 'index'])->name('signature');
 
-Route::post('signaturepad', [SignaturePadController::class, 'upload'])->name('signaturepad.upload');
+Route::post('store/signature', [SignaturePadController::class, 'uploadSignature'])->name('store.signature');
 });
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -65,7 +65,7 @@
             <label for="formGroupExampleInput">Описание за монтаж</label>
             <textarea id="install" value="{{ old('install') }}" name="install" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->install_description }}</textarea>
         </div>
-        <div id="area" class="form-group">
+        <div class="form-group">
             <label for="formGroupExampleInput">Площ</label>
             <textarea id="area" value="{{ old('area') }}" name="area" type="text" class="form-control" id="formGroupExampleInput" placeholder="">{{ $order->area }}</textarea>
         </div>
@@ -132,20 +132,33 @@
         <input type="hidden"name="format" value="1">
         <div class="form-group">
             <label for="formGroupExampleInput">Сума</label>
-            <input name="price" type="text" value="{{ $order->price }}" class="form-control" id="formGroupExampleInput" placeholder="">
+            <input name="price" type="number" step="any" value="{{ $order->price }}" class="form-control" id="formGroupExampleInput" placeholder="">
         </div>
 
         <div class="form-group">
-            <label for="formGroupExampleInput">Краен срок</label>
-            <input value="{{ $order->finish_date }}" name="finish_date" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+            <label for="formGroupExampleInput">Краен срок за дизайн</label>
+            <input value="{{ $order->finish_date_design }}" name="finish_date_design" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput">Краен срок за печат</label>
+            <input value="{{ $order->finish_date_print }}" name="finish_date_print" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
+        </div>
+        <div class="form-group">
+            <label for="formGroupExampleInput">Краен срок за монтаж</label>
+            <input value="{{ $order->finish_date_install }}" name="finish_date_install" type="date" class="form-control" id="formGroupExampleInput" placeholder="">
         </div>
 
 
         <div class="form-group">
             <label for="formGroupExampleInput">Изпрати към</label>
             <select name="format" class="form-control form-control-lg">
+            @if($order->format_id == 1) 
                 <option value="2">Печатар</option>
+                <option selected value="1">Дизайнер</option>
+                @else
+                <option selected value="2">Печатар</option>
                 <option value="1">Дизайнер</option>
+            @endif
             </select>
         </div>
 
@@ -160,7 +173,7 @@
     
 $(document).ready(function(){
 
-    if ( $('#designChoose').value == '1')
+    if ( $('#designChoose').val() == '1')
       {
         $("#design_show").show();
       }

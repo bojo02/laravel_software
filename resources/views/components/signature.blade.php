@@ -1,22 +1,23 @@
 <div>
     <x-layouts.base>
         @slot('content')
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> 
+     
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> 
 
-    <link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/south-street/jquery-ui.css" rel="stylesheet"> 
+    <link type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/south-street/jquery-ui.css" rel="stylesheet"> 
 
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 
-    <script type="text/javascript" src="http://keith-wood.name/js/jquery.signature.js"></script>
+    <script type="text/javascript" src="https://keith-wood.name/js/jquery.signature.js"></script>
 
   
 
-    <link rel="stylesheet" type="text/css" href="http://keith-wood.name/css/jquery.signature.css">
+
 
   
 
     <style>
-
+html, body {margin: 0; height: 100%; overflow: hidden}
         .kbw-signature { width: 100%; height: 200px;}
 
         #sig canvas{
@@ -26,6 +27,16 @@
             height: auto;
 
         }
+      /* Styles for signature plugin v1.2.0. */
+.kbw-signature {
+	display: inline-block;
+	border: 1px solid #a0a0a0;
+	-ms-touch-action: none;
+}
+.kbw-signature-disabled {
+	opacity: 0.35;
+}
+
 
     </style>
         <div class="container">
@@ -38,7 +49,7 @@
 
             <div class="card-header">
 
-                <h5>Laravel Signature Pad Tutorial Example - ItSolutionStuff.com </h5>
+                <h2>Подпис</h2>
 
             </div>
 
@@ -56,21 +67,24 @@
 
                  @endif
 
-                 <form method="POST" action="{{ route('signaturepad.upload') }}">
+                 <form method="POST" action="{{ route('store.signature') }}">
 
                      @csrf
 
                      <div class="col-md-12">
 
-                         <label class="" for="">Signature:</label>
+                         <label class="" for=""></label>
 
                          <br/>
 
                          <div id="sig" ></div>
 
                          <br/>
+                         <br>
 
-                         <button id="clear" class="btn btn-danger btn-sm">Clear Signature</button>
+                         <input type="hidden" name="id" value="{{$id}}">
+
+                         <button id="clear" class="btn btn-danger btn-sm">Изчисти</button>
 
                          <textarea id="signature64" name="signed" style="display: none"></textarea>
 
@@ -78,7 +92,7 @@
 
                      <br/>
 
-                     <button class="btn btn-success">Save</button>
+                     <button class="btn btn-success">Запази</button>
 
                  </form>
 

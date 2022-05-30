@@ -31,12 +31,15 @@ class CreateOrderTable extends Migration
             $table->string('laminat');
             $table->string('term');
             $table->string('design');
+            $table->string('signature')->default('');
             $table->string('design_description')->default('');
             $table->string('install_description');
             $table->string('preprint_description');
             $table->integer('delivery_id')->default(0);
-            $table->integer('price');
-            $table->date('finish_date');
+            $table->decimal('price', 8, 2);
+            $table->date('finish_date_design');
+            $table->date('finish_date_install');
+            $table->date('finish_date_print');
             $table->string('status_id')->default(1);
             $table->string('format_id');
             $table->integer('user_id');
